@@ -1,15 +1,43 @@
 body {
-	min-width:450px;
+	min-width:550px;
 	font-family: Verdana, Tahoma, Arial, Times, Serif;
 	font-size:12px;
 }
 
-#authAuthorise, #auth {
+.feedbackText {
+	font-size:10px;
+}
+
+#authAuthorise, #auth, .blocked {
 	display: none;
 }
 
 #authTable {
 	font-size:10px;
+	width:100%;
+}
+
+.newsLink:hover {
+	text-decoration:none;
+}
+
+.center {
+	text-align:center;
+}
+
+.right {
+	text-align:right;
+}
+
+p.info {
+	padding:3px 3px 3px 68px;
+    color:#000;
+    -moz-border-radius:6px;
+    -webkit-border-radius:6px;
+    clear:left;
+    margin:0 1em .5em 1em;
+    border:2px solid #457F9F;
+    background:#A7CBDF url('images/information_icon.svg') no-repeat 4px 50%;
 }
 
 table {

@@ -1,0 +1,19 @@
+0.4.3
+
+- Fixed a rounding error with quanities of processed items in the GE
+- Added information messages which appear when there's no content in the response from the server
+	(too many requests have been made and the user has been blocked)
+- Added a feed for the latest RuneScape News, styling it with an Accordion effect
+- Created a tabbed interface (Personal, News)
+
+0.4.2
+
+- A working fix to sort out installation problems with Chrome versions <6
+
+0.4.1
+
+- Attempted fix to sort out installation problems with Chrome versions <6
+
+0.4
+
+- Initial Release

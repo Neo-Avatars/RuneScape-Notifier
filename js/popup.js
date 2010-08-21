@@ -1,6 +1,35 @@
 //http://services.runescape.com/m=toolbar/geupdate.ws
 //http://services.runescape.com/m=toolbar/activities.ws
 /**
+	States that the popup is being used and can be manipulated
+*/
+var popup = true;
+
+/**
+	Contains functions relating to initialising page content
+*/
+var Page = {
+	/**
+		Set the text for the 'blocked' messages
+	*/
+	initBlockedMessages: function(){
+		Page.setBlockedMessage( GE );
+		Page.setBlockedMessage( Activities );
+	},
+	/**
+		Set the text for an individual 'blocked' message
+		@param type - an object relating to that type of request
+	*/
+	setBlockedMessage: function( type ){
+		$('#' + type.typePrefix + 'Blocked').html('<p class="info"><strong>Load Error</strong><br />\
+			An attempt was made to fetch ' + type.typePrefix
+			+ ' data, but nothing was returned. This may be a problem with the connection, \
+			 or may indicate that too many requests have been made, causing Jagex to temporarily \
+			 prevent you from making any more. [/essay]');
+	}
+};
+
+/**
 	Popup-specific authorisation-related functions
 */
 var PopupAuth = {
@@ -23,6 +52,22 @@ var PopupAuth = {
 		$('#authUnuthorise').show();
 		$('#GE').show();
 		$('#activities').show();
+	},
+	/**
+		Displays the relevant things to tell the user that they've possibly been blocked and hides unneeded things
+		@param prefix - the prefix for the type of request that the user has been blocked from making
+	*/
+	displayBlockedInfo: function( typePrefix ){
+		$('#' + typePrefix + 'Open').hide();
+		$('#' + typePrefix + 'Blocked').show();
+	},
+	/**
+		Hides the relevant things to tell the user that they've possibly been blocked and shows other things
+		@param prefix - the prefix for the type of request that the user has been blocked from making
+	*/
+	hideBlockedInfo: function( typePrefix ){
+		$('#' + typePrefix + 'Open').show();
+		$('#' + typePrefix + 'Blocked').hide();
 	}
 };
 
@@ -183,6 +228,53 @@ var PopupActivities = {
 	}
 };
 
+/**
+	Popup-specific news-related functions
+*/
+var PopupNews = {
+	/**
+		Fetches and displays the news data
+	*/
+	fetchAndDisplayData: function(){
+		News.fetchRSS( function( xml ){ News.createAndDisplayFeed( xml ) } );
+	},
+	/**
+		Creates and displays the news RSS feed content
+		@param xml - the result from the XHR for the RSS feed
+	*/
+	createAndDisplayFeed: function( xml ){
+		var content = News.createFeedContent( xml );
+		News.displayFeedContent( content );
+	},
+	/**
+		Creates the content to display the RSS feed
+		@param  xml - the result from the XHR for the RSS feed
+		@return content - the formatted feed
+	*/
+	createFeedContent: function( xml ){
+		var content = '';
+		$( xml ).find('item').each(function(){
+			content += '<h3><a href="#">';
+			content += $(this).find('title').text();
+			content += '</a></h3><div><p>' + $(this).find('description').text();
+			content += ' <a href="#" onclick="Browser.openTab(\'' + $(this).find('guid').text();
+			content += '\');" class="newsLink">Read more...</a></p></div>';
+		});
+		return content;
+	},
+	/**
+		Displays the news feed
+		@param content - the content to display
+	*/
+	displayFeedContent: function( content ){
+		$('#newsPosts').append( content );
+		$('#newsPosts').accordion({autoHeight: false});
+	}
+};
+
+/**
+	Does various things relating to the Username - requires Chrome 6.0.472.36+ (Beta) (to access cookies)
+*/
 //var Username = {
 	/**
 		Fetches the username that has been authorised and sets it as the displayed value
@@ -201,12 +293,16 @@ var PopupActivities = {
 //};
 
 var initPopup = function(){
+	$("ul.tabs").tabs("div.panes > div");
 	$.extend( Auth, PopupAuth );
 	$.extend( GE, PopupGE );
 	$.extend( Activities, PopupActivities );
-	//Username.get();
+	$.extend( News, PopupNews );
+	//Username.get(); //requires Chrome 6.0.472.36 (Beta)
+	Page.initBlockedMessages();
 	GE.fetchAndDisplayData();
 	Activities.fetchAndDisplayData();
+	News.fetchAndDisplayData();
 };
 
 $(function() {

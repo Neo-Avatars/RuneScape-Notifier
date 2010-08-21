@@ -1,45 +1,98 @@
 <html>
 <head>
-<link rel="stylesheet" type="text/css" href="style/popup.css" /> 
+
+<link rel="stylesheet" type="text/css" href="style/jquery.tools.tabs.css" />
+<link rel="stylesheet" type="text/css" href="style/jquery-ui-1.8.4.custom.css" />
+<link rel="stylesheet" type="text/css" href="style/popup.css" />
+
 <script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/jquery.tools.tabs.js"></script>
+<script type="text/javascript" src="js/jquery-ui-1.8.4.accordion.min.js"></script>
 <script type="text/javascript" src="js/shared.js"></script>
 <script type="text/javascript" src="js/popup.js"></script>
+
 </head>
 <body>
-	
-	<div id="GE">
+
+<!--<p class="feedbackText">Please submit feedback and suggestions to 
+	@<a href="#" onclick="Browser.openTab('http://www.twitter.com/NeoAvatars');">NeoAvatars</a> or as a 
+	<a href="#" onclick="Browser.openTab('http://runescape.salmoneus.net/forums/blog/neo_avatars/index.php?showentry=54996');">blog comment</a>. Huge ty. &lt;3
+	<a href="#" onclick="$(this).parent().slideUp();">Hide</a></p>-->
+
+<ul class="tabs">
+	<li><a href="#personal">Personal</a></li>
+	<li><a href="#news">News</a></li>
+</ul>
+
+<!-- PANES -->
+<div class="panes">
+
+<!-- PERSONAL -->
+<div class="panes-content">
+
+	<div id="GEMain">
 		<h3>Grand Exchange</h3>
-		<p id="GERunningOffers"></p>
-		<p id="GECompleteOffers"></p>
-		<table id="GETable" class="classyTable">
-			<thead>
-				<tr>
-					<th>Icon</th>
-					<th>Offer</th>
-				</tr>
-			</thead>
-			<tbody>
-			</tbody>
-		</table>
 		
-	</div>
-	
-	<div id="activities">
-		<h3>Activities</h3>
-		<div id="activityContent">
-			<ul id="activityList">
-			</ul>
+		<div id="GEBlocked" class="blocked">
+		</div>
+		
+		<div id="GEOpen" class="open">
+			<p id="GERunningOffers"></p>
+			<p id="GECompleteOffers"></p>
+			<table id="GETable" class="classyTable">
+				<thead>
+					<tr>
+						<th>Icon</th>
+						<th>Offer</th>
+					</tr>
+				</thead>
+				<tbody>
+				</tbody>
+			</table>
 		</div>
 	</div>
 	
-	<div align="center">
+	<div id="activityMain">
+		<h3>Activities</h3>
+		
+		<div id="activityBlocked" class="blocked">
+		</div>
+		
+		<div id="activityOpen" class="open">
+			<div id="activityContent">
+				<ul id="activityList">
+				</ul>
+			</div>
+		</div>
+	</div>
+	
+</div>
+<!-- END PERSONAL -->
+	
+<!-- NEWS -->
+<div class="panes-content">
+
+	<div id="newsMain">
+		<h3>News</h3>
+		
+		<div id="newsPosts">
+		</div>
+	</div>
+	
+</div>
+<!-- END NEWS -->
+	
+</div>
+<!-- END PANES -->
+	
+	<div id="authMain">
 		<table id="authTable">
 			<tbody>
 				<tr>
 					<td><a href="#" onclick="Auth.openAuthPage();">Authorise</a></td>
-					<td><a href="#" onclick="initPopup();">Reload Popup</a></td>
-					<td><a href="#" onclick="Auth.openUnauthPage();" title="Stop the extension working by stopping it accessing your GE and Activity information">Unauthorise</a></td>
-					<td id="authUsername"></td>
+					<td class="center"><a href="#" onclick="initPopup();">Reload Popup</a></td>
+					<td class="right"><a href="#" onclick="Auth.openUnauthPage();" title="Stop the extension working by stopping it accessing your GE and Activity information">Unauthorise</a></td>
+					<!--<td id="authUsername"></td>-->
 				</tr>
 			</tbody>
 		</table>

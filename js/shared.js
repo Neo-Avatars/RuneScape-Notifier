@@ -3,20 +3,46 @@
 */
 var Auth = {
 	/**
+		A prefix used to identify Auth-related HTML elements
+	*/
+	typePrefix: 'auth',
+	/**
 		Based on an XML xhr response, checks to see if it contains a link to the authorisation page (is not suthorised).
-		@param xhr
-		@param ge - set to true if it's from a call to fetch GE data
+		@param xhr - the XHR
 		@return isAuthorised
 	*/
-	isAuthorised: function( xhr, ge ){
+	isAuthorised: function( xhr ){
 		var comparison = 'toolbar/authorise';
-		/*if( xhr.responseXML === null ){
-			if( ge ){
-				Browser.setBadgeText( 'IDK' );
-			}
-			return false;
-		}*/
 		return xhr.responseText.indexOf( comparison ) === -1 ? true : false;
+	},
+	/**
+		Based on a xhr response, checks to see if it is null (too many requests have been made, causing you to be blocked from Jagex's servers)
+		@param xhr - the XHR
+		@return isBlocked - boolean
+	*/
+	isBlocked: function( xhr ){
+		if( xhr.getResponseHeader('Content-Length') == 0 ){
+			return true;
+		}
+		return false;
+	},
+	/**
+		Checks to see if the response data indicates that the user has been blocked.
+		@param xhr
+		@param typePrefix - a prefix used to identify HTML elements relating to that object
+		@return A boolean saying whether or not you're blocked
+	*/
+	checkBlock: function( xhr, typePrefix ){
+		if( Auth.isBlocked( xhr ) ){
+			if( popup ){
+				Auth.displayBlockedInfo( typePrefix );
+			}
+			return true;
+		}
+		if( popup ){
+			Auth.hideBlockedInfo( typePrefix );
+		}
+		return false;
 	},
 	/**
 		Opens up the authorisation page in a new tab.
@@ -58,7 +84,8 @@ var Browser = {
 			text: text
 		};
 		chrome.browserAction.setBadgeText( details );
-	}//,
+	}
+	//, //requires Chrome 6.0.472.36 (Beta) to access cookies
 	/**
 		Returns the content of the specified cookie
 		@param URL - the URL with which the cookie is associated
@@ -80,6 +107,10 @@ var Browser = {
 */
 var GE = {
 	/**
+		A prefix used to identify GE-related HTML elements
+	*/
+	typePrefix: 'GE',
+	/**
 		The URL to fetch GE info
 	*/
 	coreURL: 'http://services.runescape.com/m=toolbar/geupdate.ws',
@@ -89,6 +120,9 @@ var GE = {
 		@return offers - the array of offers
 	*/
 	parseOffers: function( xhr ){
+		if( Auth.checkBlock( xhr, GE.typePrefix ) ){
+			return;
+		}
 		if( Auth.isAuthorised( xhr ) ){
 			var geOffers = xhr.responseXML.getElementsByTagName("MENU_ITEM");
 			var offers = new Array( geOffers.length );
@@ -105,6 +139,9 @@ var GE = {
 		@return noOffers - the number of running offers
 	*/
 	getRunningOffers: function( xhr ){
+		if( Auth.checkBlock( xhr, GE.typePrefix ) ){
+			return;
+		}
 		if( Auth.isAuthorised( xhr ) ){
 			var geOffers = xhr.responseXML.getElementsByTagName("MENU_ITEM");
 			return geOffers.length;
@@ -144,7 +181,7 @@ var GE = {
 		
 		obj.price = parseInt( matchInt[1], 10 );
 		obj.costSoFar = parseInt( matchInt[3], 10 );
-		obj.quantityProcessed = obj.costSoFar === 0 ? 0 : parseInt( obj.costSoFar / obj.price, 10 );
+		obj.quantityProcessed = obj.costSoFar === 0 ? 0 : parseInt( Math.round( obj.costSoFar / obj.price ), 10 );
 		obj.percent = parseInt( ( obj.quantityProcessed / obj.quantity ) * 100, 10 );
 		
 		var matchURL = offer.match( Regexp.URL );
@@ -158,7 +195,14 @@ var GE = {
 	}
 };
 
+/**
+	Contains Activity / D&D related functions
+*/
 var Activities = {
+	/**
+		A prefix used to identify Activity-related HTML elements
+	*/
+	typePrefix: 'activity',
 	/**
 		The URL to fetch activity info
 	*/
@@ -169,9 +213,12 @@ var Activities = {
 		@return activities - the array of activities
 	*/
 	parseActivities: function( xhr ){
+		if( Auth.checkBlock( xhr, Activities.typePrefix ) ){
+			return;
+		}
 		if( Auth.isAuthorised( xhr ) ){
 			var rawActivities = xhr.responseXML.getElementsByTagName("MENU_ITEM");
-			var activites = new Array( rawActivities.length );
+			var activities = new Array( rawActivities.length );
 			for(var i = 0, activity; activity = rawActivities[i]; i++){
 				activities[i] = Activities.splitActivity( activity.textContent );
 			}
@@ -193,6 +240,32 @@ var Activities = {
 		obj.rskbLink = matchURL[1];
 		//getKeys( obj );
 		return obj;
+	}
+};
+
+/**
+	Contains news-related functions
+*/
+var News = {
+	/**
+		A prefix used to identify news-related HTML elements
+	*/
+	typePrefix: 'news',
+	/**
+		The URL of the RSS feed
+	*/
+	rssURL: 'http://services.runescape.com/m=news/latest_news.rss',
+	/**
+		Fetches the news RSS feed and does something with it
+		@param callback - what to do once the data has been fetched
+	*/
+	fetchRSS: function( callback ){
+		var ajaxConfig = {
+			url: News.rssURL,
+			dataType: 'xml',
+			success: callback
+		};
+		$.ajax( ajaxConfig );
 	}
 };
 
