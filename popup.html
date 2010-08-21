@@ -1,0 +1,64 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="style/popup.css" /> 
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/shared.js"></script>
+<script type="text/javascript" src="js/popup.js"></script>
+</head>
+<body>
+	
+	<div id="GE">
+		<h3>Grand Exchange</h3>
+		<p id="GERunningOffers"></p>
+		<p id="GECompleteOffers"></p>
+		<table id="GETable" class="classyTable">
+			<thead>
+				<tr>
+					<th>Icon</th>
+					<th>Offer</th>
+				</tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
+		
+	</div>
+	
+	<div id="activities">
+		<h3>Activities</h3>
+		<div id="activityContent">
+			<ul id="activityList">
+			</ul>
+		</div>
+	</div>
+	
+	<div align="center">
+		<table id="authTable">
+			<tbody>
+				<tr>
+					<td><a href="#" onclick="Auth.openAuthPage();">Authorise</a></td>
+					<td><a href="#" onclick="initPopup();">Reload Popup</a></td>
+					<td><a href="#" onclick="Auth.openUnauthPage();" title="Stop the extension working by stopping it accessing your GE and Activity information">Unauthorise</a></td>
+					<td id="authUsername"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+		
+	<div id="auth">
+		<div id="authAuthorise">
+			<p id="authAuthoriseLink">
+				<a href="#" onclick="Auth.openAuthPage();">Authorise account</a> to use extension.
+			</p>
+			<p id="authAuthoriseRetry">
+				<a href="#" onclick="initPopup();">I've authorised it now - try again please!</a>
+			</p>
+		</div>
+		<div id="authUnauthorise">
+			<p id="authUnauthoriseLink">
+				<a href="#" onclick="Auth.openUnauthPage();" title="Stop the extension working by stopping it accessing your GE and Activity information">Unauthorise extension</a>
+			</p>
+		</div>
+	</div>
+</body>
+</html>

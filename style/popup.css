@@ -1,0 +1,68 @@
+body {
+	min-width:450px;
+	font-family: Verdana, Tahoma, Arial, Times, Serif;
+	font-size:12px;
+}
+
+#authAuthorise, #auth {
+	display: none;
+}
+
+#authTable {
+	font-size:10px;
+}
+
+table {
+    border:0;
+    margin:4px auto;
+    border-collapse:collapse;
+    border-spacing:0;
+    width:100%;
+}
+
+table.classyTable {
+    background:#E0BA8B;
+    border:.1em solid #7F5F27;
+    margin:.4em auto;
+    border-collapse:collapse;
+    border-spacing:0;
+    clear:both;
+    width:90%;
+}
+
+table.classyTable th,
+table.classyTable td {
+    border:1px solid #381F04;
+    text-align:center;
+    font-size:10px;
+}
+
+table.classyTable thead {
+    background:#BD976A;
+}
+
+table.classyTable tr.completed {
+    background:#C59F70;
+}
+
+#activityList {
+	list-style-type:none;
+	padding:0px;
+	margin:0px;
+}
+
+#activityList li {
+	background-repeat:no-repeat;
+	background-position:left center; 
+	padding-left:20px;
+	line-height:17px;
+}
+
+li.allow {
+	background-image:url(http://www.runescape.com/img/toolbar/icons/activities-icon-allow.png);
+	
+}
+
+li.disallow {
+	background-image:url(http://www.runescape.com/img/toolbar/icons/activities-icon-disallow.png);
+}

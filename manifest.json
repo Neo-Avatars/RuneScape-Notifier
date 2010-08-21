@@ -1,0 +1,20 @@
+{
+	"name": "RuneScape Notifier",
+	"version": "0.4.2",
+	"description": "Takes the information available in toolbars for other browsers and gives it to Chrome. By Neo Avatars.",
+	"background_page": "background.html",
+	"update_url": "http://skins.santafish.org/crx/runescape-notifier-updates.xml",
+	"browser_action": {
+		"default_icon": "icon-32.png",
+		"popup": "popup.html"
+	},
+	"icons": {
+		"16": 	"icon-16.png",
+		"32": 	"icon-32.png",
+		"128": 	"icon-128.png"
+	},
+	"permissions": [
+		"tabs",
+		"http://*.runescape.com/"
+	]
+}
