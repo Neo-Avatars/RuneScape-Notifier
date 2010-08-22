@@ -1,3 +1,4 @@
+
 0.4.3
 
 - Fixed a rounding error with quanities of processed items in the GE
