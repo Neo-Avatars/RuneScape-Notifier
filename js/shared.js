@@ -266,6 +266,43 @@ var News = {
 			success: callback
 		};
 		$.ajax( ajaxConfig );
+	},
+	/**
+		Stores the formatted RSS feed in storage
+		@param formattedFeed - the formatted feed
+	*/
+	storeFormattedRSS: function( content ){
+		localStorage[ Storage.News.formattedFeed ] = content;
+	},
+	/**
+		Fetches the formatted RSS feed from storage, checks to see if there's anything there and if there isn't, trys to fetch it
+		@return formattedFeed - the formatted feed for the popup
+	*/
+	fetchFormattedRSS: function(){
+		var content = localStorage[ Storage.News.formattedFeed ];
+		//try to fetch it again if there's nothing stored
+		if( content.length === 0 || content === null ){
+			News.fetchBGNews();
+			content = localStorage[ Storage.News.formattedFeed ];
+		}
+		return content
+	},
+	/**
+		Creates the content to display the RSS feed
+		@param  xml - the result from the XHR for the RSS feed
+		@return content - the formatted feed
+	*/
+	createFeedContent: function( xml ){
+		var content = '';
+		//http://www.switchonthecode.com/tutorials/xml-parsing-with-jquery
+		$( xml ).find('item').each(function(){
+			content += '<h3><a href="#">';
+			content += $(this).find('title').text();
+			content += '</a></h3><div><p>' + $(this).find('description').text();
+			content += ' <a href="#" onclick="Browser.openTab(\'' + $(this).find('guid').text();
+			content += '\');" class="newsLink">Read more...</a></p></div>';
+		});
+		return content;
 	}
 };
 
@@ -296,6 +333,21 @@ var Number = {
 		} else {
 			return number;
 		}
+	}
+};
+
+/**
+	Various keys used for localStorage
+*/
+var Storage = {
+	/**
+		Storage keys relating to the news
+	*/
+	News: {
+		/**
+			The storage key for the news RSS feed
+		*/
+		formattedFeed: 'newsRSS'
 	}
 };
 

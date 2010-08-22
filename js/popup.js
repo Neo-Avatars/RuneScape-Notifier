@@ -236,38 +236,27 @@ var PopupNews = {
 		Fetches and displays the news data
 	*/
 	fetchAndDisplayData: function(){
-		News.fetchRSS( function( xml ){ News.createAndDisplayFeed( xml ) } );
+		var content = News.fetchFormattedRSS();
+		News.displayFeedContent( content );
+		
+		//News.fetchRSS( function( xml ){ News.createAndDisplayFeed( xml ) } );
+		//News.createAndDisplayFeed( content );
 	},
 	/**
 		Creates and displays the news RSS feed content
 		@param xml - the result from the XHR for the RSS feed
 	*/
 	createAndDisplayFeed: function( xml ){
+		//var content = News.fetchFormattedRSS();
 		var content = News.createFeedContent( xml );
 		News.displayFeedContent( content );
-	},
-	/**
-		Creates the content to display the RSS feed
-		@param  xml - the result from the XHR for the RSS feed
-		@return content - the formatted feed
-	*/
-	createFeedContent: function( xml ){
-		var content = '';
-		$( xml ).find('item').each(function(){
-			content += '<h3><a href="#">';
-			content += $(this).find('title').text();
-			content += '</a></h3><div><p>' + $(this).find('description').text();
-			content += ' <a href="#" onclick="Browser.openTab(\'' + $(this).find('guid').text();
-			content += '\');" class="newsLink">Read more...</a></p></div>';
-		});
-		return content;
 	},
 	/**
 		Displays the news feed
 		@param content - the content to display
 	*/
 	displayFeedContent: function( content ){
-		$('#newsPosts').append( content );
+		$('#newsPosts').html( content );
 		$('#newsPosts').accordion({autoHeight: false});
 	}
 };
@@ -292,6 +281,9 @@ var PopupNews = {
 	//}
 //};
 
+/**
+	Initialises the popup content
+*/
 var initPopup = function(){
 	$("ul.tabs").tabs("div.panes > div");
 	$.extend( Auth, PopupAuth );
