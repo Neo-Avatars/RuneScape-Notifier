@@ -12,6 +12,9 @@ var Auth = {
 		@return isAuthorised
 	*/
 	isAuthorised: function( xhr ){
+		/*if( typeof xhr === 'undefined' || typeof xhr.responseText === 'undefined' ){
+			return false;
+		}*/
 		var comparison = 'toolbar/authorise';
 		return xhr.responseText.indexOf( comparison ) === -1 ? true : false;
 	},
@@ -27,6 +30,27 @@ var Auth = {
 		return false;
 	},
 	/**
+		Based on an XML response, checks to see if it contains a link to the authorisation page (is not suthorised).
+		@param xml - the XML
+		@return isAuthorised
+	*/
+	isAuthorisedXML: function( xml ){
+		var comparison = 'Authorise to get';
+		var authorised = $( xml ).find('BUTTON_TOOLTIP').text().indexOf( comparison ) === -1 ? true : false;
+		return authorised;
+	},
+	/**
+		Based on a xml response, checks to see if it is null (too many requests have been made, causing you to be blocked from Jagex's servers)
+		@param xhr - the XHR
+		@return isBlocked - boolean
+	*/
+	isBlockedXML: function( xml ){
+		if( xml.length === 0 ){
+			return true;
+		}
+		return false;
+	},
+	/**
 		Checks to see if the response data indicates that the user has been blocked.
 		@param xhr
 		@param typePrefix - a prefix used to identify HTML elements relating to that object
@@ -34,6 +58,24 @@ var Auth = {
 	*/
 	checkBlock: function( xhr, typePrefix ){
 		if( Auth.isBlocked( xhr ) ){
+			if( popup ){
+				Auth.displayBlockedInfo( typePrefix );
+			}
+			return true;
+		}
+		if( popup ){
+			Auth.hideBlockedInfo( typePrefix );
+		}
+		return false;
+	},
+	/**
+		Checks to see if the response data indicates that the user has been blocked.
+		@param xml
+		@param typePrefix - a prefix used to identify HTML elements relating to that object
+		@return A boolean saying whether or not you're blocked
+	*/
+	checkBlockXML: function( xml, typePrefix ){
+		if( Auth.isBlockedXML( xml ) ){
 			if( popup ){
 				Auth.displayBlockedInfo( typePrefix );
 			}
@@ -208,6 +250,32 @@ var Activities = {
 	*/
 	coreURL: 'http://services.runescape.com/m=toolbar/activities.ws',
 	/**
+		Fetches the Activities data
+		@param callback - the callback to perform when the data returns
+	*/
+	fetchData: function( callback ){
+		var ajaxConfig = {
+			url: Activities.coreURL,
+			dataType: 'xml',
+			success: callback
+		};
+		$.ajax( ajaxConfig );
+	},
+	/**
+		Stores the data in localstorage
+		@param xml - the xml data
+	*/
+	storeData: function( xml ){
+		localStorage['activityXMLString'] = XMLToString( xml );
+	},
+	/**
+		Fetches the data from localstorage
+		@return xml - the xml data
+	*/
+	fetchDataFromStorage: function(){
+		return XMLFromString( localStorage['activityXMLString'] );
+	},
+	/**
 		Parses the activities, turning into an array of objects
 		@param xhr - the XHR
 		@return activities - the array of activities
@@ -227,6 +295,24 @@ var Activities = {
 		return false;
 	},
 	/**
+		Parses the activities, turning into an array of objects
+		@param xml 
+		@return activities - the array of activities
+	*/
+	parseActivitiesXML: function( xml ){
+		if( Auth.checkBlockXML( xml, Activities.typePrefix ) ){
+			return;
+		}
+		if( Auth.isAuthorisedXML( xml ) ){
+			var activities = new Array( $( xml ).find('MENU_ITEM').length );
+			$( xml ).find('MENU_ITEM').each(function( i ){
+				activities[i] = Activities.splitActivityXML( $(this) );
+			});
+			return activities;
+		}
+		return false;
+	},
+	/**
 		Splits a activity info string into the various parts, converting it into a useful object.
 		@param  act - a string about an activity
 		@return obj - the activity, but split into the various parts so it can be manipulated
@@ -239,6 +325,19 @@ var Activities = {
 		obj.icon = matchURL[0];
 		obj.rskbLink = matchURL[1];
 		//getKeys( obj );
+		return obj;
+	},
+	/**
+		Converts a activity xml segment into an object with extra data
+		@param  act - the individual xml data object
+		@return obj - the activity, but split into the various parts
+	*/
+	splitActivityXML: function( act ){
+		var obj = {};
+		obj.text = $( act ).find('CAPTION').text();
+		obj.icon = $( act ).find('ICON_URL').text();
+		obj.allow = obj.icon.indexOf('disallow') === -1 ? true : false;
+		obj.rskbLink = $( act ).find('URL').text();
 		return obj;
 	}
 };
@@ -360,6 +459,24 @@ var Regexp = {
 	globalInt: /\d+/g,
 	crudeGEName: /[\s\D]+/ig
 };
+
+//http://joncom.be/code/javascript-xml-conversion/
+var XMLToString = function(oXML) {
+  if (window.ActiveXObject) {
+    return oXML.xml;
+  } else {
+    return (new XMLSerializer()).serializeToString(oXML);
+  }
+}
+var XMLFromString = function(sXML) {
+  if (window.ActiveXObject) {
+    var oXML = new ActiveXObject("Microsoft.XMLDOM");
+    oXML.loadXML(sXML);
+    return oXML;
+  } else {
+    return (new DOMParser()).parseFromString(sXML, "text/xml");
+  }
+}
 
 /**
 	Displays the key-value pairs in an object for debugging purposes

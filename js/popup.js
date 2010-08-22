@@ -177,13 +177,28 @@ var PopupActivities = {
 		Fetches personalised activity data.
 	*/
 	fetchAndDisplayData: function(){
-		var ajaxConfig = {
-			url: Activities.coreURL,
-			success: function( data, status, xhr ){
+		Activities.fetchData( function( data, status, xhr ){
 				Activities.displayData( xhr );
-			}
-		};
-		$.ajax( ajaxConfig );
+			});
+	},
+	/**
+		Fetches personalised activity data.
+	*/
+	fetchAndDisplayDataXML: function(){
+		Activities.displayDataXML( Activities.fetchDataFromStorage() );
+	},
+	/**
+		Displays the activity data
+		@param xml
+	*/
+	displayDataXML: function( xml ){
+		if( Auth.isAuthorisedXML( xml ) ){
+			Auth.hideAuthLink();
+			var activities = Activities.parseActivitiesXML( xml );
+			$('#activityList').html( Activities.generateList( activities ) );
+		} else {
+			Auth.showAuthLink();
+		}
 	},
 	/**
 		Displays the activity data
@@ -213,6 +228,18 @@ var PopupActivities = {
 		return content;
 	},
 	/**
+		Generates a list of activites based on the passed xml data
+		@param xml
+		@return list - the HTML to fit within the <ul> tags of the list
+	*/
+	generateListXML: function( xml ){
+		var content = '';
+		$( xml ).find('MENU_ITEM').each(function(){
+			content += Activities.generateListBulletXML( $(this) );
+		});
+		return content;
+	},
+	/**
 		Generates a bullet point for the activity list
 		@param activity - a single activity object
 		@return bullet - the HTML for one row of the table
@@ -225,7 +252,25 @@ var PopupActivities = {
 		content += '">' + act.text + '</li>';
 		
 		return content;
+	},
+	/**
+		Generates a bullet point for the activity list
+		@param activity - a single activity object
+		@return bullet - the HTML for one row of the table
+	*/
+	generateListBulletXML: function( xml ){
+		var content = '';
+		
+		content += '<li class="';
+		act.allow ? content += 'allow' : content += 'disallow';
+		content += '">' + act.text + '</li>';
+		
+		return content;
 	}
+};
+
+var PopupActivitiesXML = {
+	
 };
 
 /**
@@ -293,7 +338,7 @@ var initPopup = function(){
 	//Username.get(); //requires Chrome 6.0.472.36 (Beta)
 	Page.initBlockedMessages();
 	GE.fetchAndDisplayData();
-	Activities.fetchAndDisplayData();
+	Activities.fetchAndDisplayDataXML();
 	News.fetchAndDisplayData();
 };
 

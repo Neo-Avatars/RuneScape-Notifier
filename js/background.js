@@ -24,6 +24,22 @@ var BGGE = {
 };
 
 /**
+	Background-specific activity-related functions
+*/
+var BGActivities = {
+	/**
+		The interval between lookups (10 minutes = 600,000ms)
+	*/
+	updateInterval: 600000,
+	/**
+		Fetches the activity data in the background so that it doesn't need to be loaded every time the popup is viewed
+	*/
+	fetchBGActivities: function(){
+		Activities.fetchData( function( xml ){ Activities.storeData( xml ); } );
+	}
+};
+
+/**
 	Background-specific news-related functions
 */
 var BGNews = {
@@ -57,10 +73,12 @@ var initBGTasks = function(){
 	window.setInterval( GE.updateBadgeText, GE.updateInterval );
 	News.fetchBGNews();
 	window.setInterval( News.fetchBGNews, News.updateInterval );
+	Activities.fetchBGActivities();
 };
 
 $(function() {
 	$.extend( GE, BGGE );
 	$.extend( News, BGNews );
+	$.extend( Activities, BGActivities );
 	initBGTasks();
 });
