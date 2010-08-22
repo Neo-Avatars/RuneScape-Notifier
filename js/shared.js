@@ -7,55 +7,51 @@ var Auth = {
 	*/
 	typePrefix: 'auth',
 	/**
-		Based on an XML xhr response, checks to see if it contains a link to the authorisation page (is not suthorised).
-		@param xhr - the XHR
-		@return isAuthorised
-	*/
-	isAuthorised: function( xhr ){
-		/*if( typeof xhr === 'undefined' || typeof xhr.responseText === 'undefined' ){
-			return false;
-		}*/
-		var comparison = 'toolbar/authorise';
-		return xhr.responseText.indexOf( comparison ) === -1 ? true : false;
-	},
-	/**
-		Based on a xhr response, checks to see if it is null (too many requests have been made, causing you to be blocked from Jagex's servers)
-		@param xhr - the XHR
-		@return isBlocked - boolean
-	*/
-	isBlocked: function( xhr ){
-		if( xhr.getResponseHeader('Content-Length') == 0 ){
-			return true;
-		}
-		return false;
-	},
-	/**
 		Based on an XML response, checks to see if it contains a link to the authorisation page (is not suthorised).
 		@param xml - the XML
 		@return isAuthorised
 	*/
-	isAuthorisedXML: function( xml ){
+	isAuthorised: function( xml ){
 		var comparison = 'Authorise to get';
-		var authorised = $( xml ).find('BUTTON_TOOLTIP').text().indexOf( comparison ) === -1 ? true : false;
-		return authorised;
+		return $( xml ).find('BUTTON_TOOLTIP').text().indexOf( comparison ) === -1 ? true : false;
 	},
 	/**
 		Based on a xml response, checks to see if it is null (too many requests have been made, causing you to be blocked from Jagex's servers)
 		@param xhr - the XHR
 		@return isBlocked - boolean
 	*/
-	isBlockedXML: function( xml ){
+	isBlocked: function( xml ){
 		if( xml.length === 0 ){
 			return true;
 		}
 		return false;
 	},
 	/**
+		Based on an XML xhr response, checks to see if it contains a link to the authorisation page (is not suthorised).
+		@param xhr - the XHR
+		@return isAuthorised
+	
+	isAuthorised: function( xhr ){
+		var comparison = 'toolbar/authorise';
+		return xhr.responseText.indexOf( comparison ) === -1 ? true : false;
+	},*/
+	/**
+		Based on a xhr response, checks to see if it is null (too many requests have been made, causing you to be blocked from Jagex's servers)
+		@param xhr - the XHR
+		@return isBlocked - boolean
+	
+	isBlocked: function( xhr ){
+		if( xhr.getResponseHeader('Content-Length') == 0 ){
+			return true;
+		}
+		return false;
+	},*/
+	/**
 		Checks to see if the response data indicates that the user has been blocked.
 		@param xhr
 		@param typePrefix - a prefix used to identify HTML elements relating to that object
 		@return A boolean saying whether or not you're blocked
-	*/
+	
 	checkBlock: function( xhr, typePrefix ){
 		if( Auth.isBlocked( xhr ) ){
 			if( popup ){
@@ -67,15 +63,15 @@ var Auth = {
 			Auth.hideBlockedInfo( typePrefix );
 		}
 		return false;
-	},
+	},*/
 	/**
 		Checks to see if the response data indicates that the user has been blocked.
 		@param xml
 		@param typePrefix - a prefix used to identify HTML elements relating to that object
 		@return A boolean saying whether or not you're blocked
 	*/
-	checkBlockXML: function( xml, typePrefix ){
-		if( Auth.isBlockedXML( xml ) ){
+	checkBlock: function( xml, typePrefix ){
+		if( Auth.isBlocked( xml ) ){
 			if( popup ){
 				Auth.displayBlockedInfo( typePrefix );
 			}
@@ -169,6 +165,14 @@ var GE = {
 		$.ajax( ajaxConfig );
 	},
 	/**
+		Fetches and stores the GE data
+	*/
+	fetchAndStoreData: function(){
+		GE.fetchData( function( xml ){
+			GE.storeData( xml );
+		});
+	},
+	/**
 		Stores the data in localstorage
 		@param xml - the xml data
 	*/
@@ -186,7 +190,7 @@ var GE = {
 		Parses the GE offers, turning into an array of objects
 		@param xhr - the XHR
 		@return offers - the array of offers
-	*/
+	
 	parseOffers: function( xhr ){
 		if( Auth.checkBlock( xhr, GE.typePrefix ) ){
 			return;
@@ -200,20 +204,20 @@ var GE = {
 			return offers;
 		}
 		return false;
-	},
+	},*/
 	/**
 		Parses the GE offers, turning into an array of objects
 		@param xml - the XML data
 		@return offers - the array of offers
 	*/
-	parseOffersXML: function( xml ){
-		if( Auth.checkBlockXML( xml, GE.typePrefix ) ){
+	parseOffers: function( xml ){
+		if( Auth.checkBlock( xml, GE.typePrefix ) ){
 			return;
 		}
-		if( Auth.isAuthorisedXML( xml ) ){
+		if( Auth.isAuthorised( xml ) ){
 			var offers = new Array( $( xml ).find('MENU_ITEM').length );
 			$( xml ).find('MENU_ITEM').each(function( i ){
-				offers[i] = GE.splitOfferXML( $(this) );
+				offers[i] = GE.splitOffer( $(this) );
 			});
 			return offers;
 		}
@@ -246,7 +250,7 @@ var GE = {
 		Splits a GE info string into the various parts, converting it into a useful object.
 		@param offer - a string about a GE offer
 		@return obj - the offer, but split into the various parts so it can be manipulated
-	*/
+	
 	splitOffer: function( offer ){
 		var split = offer.split(' ');
 		var matchInt = offer.match( Regexp.globalInt );
@@ -271,13 +275,13 @@ var GE = {
 		//getKeys( obj );
 		
 		return obj;
-	},
+	},*/
 	/**
 		Splits a GE info string into the various parts, converting it into a useful object with various bits of extra data
 		@param offer - the individual xml data object
 		@return obj - the offer, but split into the various parts so it can be manipulated
 	*/
-	splitOfferXML: function( offer ){
+	splitOffer: function( offer ){
 		var obj = GE.splitOfferCaption( $( offer ).find('CAPTION').text() );
 
 		obj.iconURL = $( offer ).find('ICON_URL').text();
@@ -337,6 +341,14 @@ var Activities = {
 		$.ajax( ajaxConfig );
 	},
 	/**
+		Fetches and stores activity data
+	*/
+	fetchAndStoreData: function(){
+		Activities.fetchData( function( xml ){
+			Activities.storeData( xml );
+		});
+	},
+	/**
 		Stores the data in localstorage
 		@param xml - the xml data
 	*/
@@ -354,7 +366,7 @@ var Activities = {
 		Parses the activities, turning into an array of objects
 		@param xhr - the XHR
 		@return activities - the array of activities
-	*/
+	
 	parseActivities: function( xhr ){
 		if( Auth.checkBlock( xhr, Activities.typePrefix ) ){
 			return;
@@ -368,20 +380,20 @@ var Activities = {
 			return activities;
 		}
 		return false;
-	},
+	},*/
 	/**
 		Parses the activities, turning into an array of objects
 		@param xml 
 		@return activities - the array of activities
 	*/
-	parseActivitiesXML: function( xml ){
-		if( Auth.checkBlockXML( xml, Activities.typePrefix ) ){
+	parseActivities: function( xml ){
+		if( Auth.checkBlock( xml, Activities.typePrefix ) ){
 			return;
 		}
-		if( Auth.isAuthorisedXML( xml ) ){
+		if( Auth.isAuthorised( xml ) ){
 			var activities = new Array( $( xml ).find('MENU_ITEM').length );
 			$( xml ).find('MENU_ITEM').each(function( i ){
-				activities[i] = Activities.splitActivityXML( $(this) );
+				activities[i] = Activities.splitActivity( $(this) );
 			});
 			return activities;
 		}
@@ -391,7 +403,7 @@ var Activities = {
 		Splits a activity info string into the various parts, converting it into a useful object.
 		@param  act - a string about an activity
 		@return obj - the activity, but split into the various parts so it can be manipulated
-	*/
+	
 	splitActivity: function( act ){
 		var matchURL = act.match( Regexp.URL );
 		var obj = {};
@@ -401,13 +413,13 @@ var Activities = {
 		obj.rskbLink = matchURL[1];
 		//getKeys( obj );
 		return obj;
-	},
+	},*/
 	/**
 		Converts a activity xml segment into an object with extra data
 		@param  act - the individual xml data object
 		@return obj - the activity, but split into the various parts
 	*/
-	splitActivityXML: function( act ){
+	splitActivity: function( act ){
 		var obj = {};
 		obj.text = $( act ).find('CAPTION').text();
 		obj.icon = $( act ).find('ICON_URL').text();
@@ -537,20 +549,20 @@ var Regexp = {
 
 //http://joncom.be/code/javascript-xml-conversion/
 var XMLToString = function(oXML) {
-  if (window.ActiveXObject) {
-    return oXML.xml;
-  } else {
-    return (new XMLSerializer()).serializeToString(oXML);
-  }
+	if (window.ActiveXObject) {
+		return oXML.xml;
+	} else {
+		return (new XMLSerializer()).serializeToString(oXML);
+	}
 }
 var XMLFromString = function(sXML) {
-  if (window.ActiveXObject) {
-    var oXML = new ActiveXObject("Microsoft.XMLDOM");
-    oXML.loadXML(sXML);
-    return oXML;
-  } else {
-    return (new DOMParser()).parseFromString(sXML, "text/xml");
-  }
+	if (window.ActiveXObject) {
+		var oXML = new ActiveXObject("Microsoft.XMLDOM");
+		oXML.loadXML(sXML);
+		return oXML;
+	} else {
+		return (new DOMParser()).parseFromString(sXML, "text/xml");
+	}
 }
 
 /**

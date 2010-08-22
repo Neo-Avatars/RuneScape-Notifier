@@ -10,18 +10,17 @@ var BGGE = {
 		Does the various things to update the badge text which says how many GE offers have completed
 	*/
 	updateBadgeText: function(){
-		GE.fetchData( function( data, status, xhr ){
-				var offers = GE.parseOffers( xhr );
-				if( typeof offers.length !== 'undefined' ){
-					GE.countCompletedOffers( offers );
-				}
-			});
+		GE.fetchBGOffers();
+		var offers = GE.parseOffers( GE.fetchDataFromStorage() );
+		if( typeof offers.length !== 'undefined' ){
+			GE.countCompletedOffers( offers );
+		}
 	},
 	/**
 		Fetches the GE offer data in the background so that it doesn't need to be loaded every time the popup is viewed
 	*/
 	fetchBGOffers: function(){
-		GE.fetchData( function( xml ){ GE.storeData( xml ); } );
+		GE.fetchandStoreData();
 	}
 };
 
@@ -37,7 +36,7 @@ var BGActivities = {
 		Fetches the activity data in the background so that it doesn't need to be loaded every time the popup is viewed
 	*/
 	fetchBGActivities: function(){
-		Activities.fetchData( function( xml ){ Activities.storeData( xml ); } );
+		Activities.fetchAndStoreData();
 	}
 };
 
@@ -71,11 +70,11 @@ var BGNews = {
 	Sets various tasks running in the background
 */
 var initBGTasks = function(){
-	//GE.updateBadgeText();
-	//window.setInterval( GE.updateBadgeText, GE.updateInterval );
-	//News.fetchBGNews();
-	//window.setInterval( News.fetchBGNews, News.updateInterval );
-	//Activities.fetchBGActivities();
+	GE.updateBadgeText();
+	window.setInterval( GE.updateBadgeText, GE.updateInterval );
+	News.fetchBGNews();
+	window.setInterval( News.fetchBGNews, News.updateInterval );
+	Activities.fetchBGActivities();
 	GE.fetchBGOffers();
 };
 

@@ -77,22 +77,22 @@ var PopupAuth = {
 var PopupGE = {
 	/**
 		Fetches personalised GE data.
-	*/
+	
 	fetchAndDisplayData: function(){
 		GE.fetchData( function( data, status, xhr ){
 				GE.displayData( xhr );
 			});
-	},
+	},*/
 	/**
 		Fetches personalised GE data.
 	*/
-	fetchAndDisplayDataXML: function(){
-		GE.displayDataXML( GE.fetchDataFromStorage() );
+	fetchAndDisplayData: function(){
+		GE.displayData( GE.fetchDataFromStorage() );
 	},
 	/**
 		Displays the GE data
 		@param xhr
-	*/
+	
 	displayData: function( xhr ){
 		if( Auth.isAuthorised( xhr ) ){
 			Auth.hideAuthLink();
@@ -104,15 +104,15 @@ var PopupGE = {
 			//alert('ge show');
 			Auth.showAuthLink();
 		}
-	},
+	},*/
 	/**
 		Displays the GE data
 		@param xml
 	*/
-	displayDataXML: function( xml ){
-		if( Auth.isAuthorisedXML( xml ) ){
+	displayData: function( xml ){
+		if( Auth.isAuthorised( xml ) ){
 			Auth.hideAuthLink();
-			var offers = GE.parseOffersXML( xml );
+			var offers = GE.parseOffers( xml );
 			$('#GETable tbody').html( GE.generateTable( offers ) );
 			$('#GECompleteOffers').html( GE.generateOfferCompletionText( offers ) );
 			$('#GERunningOffers').html( GE.generateRunningOffersText( offers ) );
@@ -191,26 +191,26 @@ var PopupGE = {
 var PopupActivities = {
 	/**
 		Fetches personalised activity data.
-	*/
+	
 	fetchAndDisplayData: function(){
 		Activities.fetchData( function( data, status, xhr ){
 				Activities.displayData( xhr );
 			});
-	},
+	},*/
 	/**
 		Fetches personalised activity data.
 	*/
-	fetchAndDisplayDataXML: function(){
-		Activities.displayDataXML( Activities.fetchDataFromStorage() );
+	fetchAndDisplayData: function(){
+		Activities.displayData( Activities.fetchDataFromStorage() );
 	},
 	/**
 		Displays the activity data
 		@param xml
 	*/
-	displayDataXML: function( xml ){
-		if( Auth.isAuthorisedXML( xml ) ){
+	displayData: function( xml ){
+		if( Auth.isAuthorised( xml ) ){
 			Auth.hideAuthLink();
-			var activities = Activities.parseActivitiesXML( xml );
+			var activities = Activities.parseActivities( xml );
 			$('#activityList').html( Activities.generateList( activities ) );
 		} else {
 			Auth.showAuthLink();
@@ -219,7 +219,7 @@ var PopupActivities = {
 	/**
 		Displays the activity data
 		@param xhr
-	*/
+	
 	displayData: function( xhr ){
 		if( Auth.isAuthorised( xhr ) ){
 			//alert('act hide');
@@ -230,7 +230,7 @@ var PopupActivities = {
 			//alert('act show');
 			Auth.showAuthLink();
 		}
-	},
+	},*/
 	/**
 		Generates a list of activites based on the passed object
 		@param activities[] - an array of activity objects
@@ -247,14 +247,14 @@ var PopupActivities = {
 		Generates a list of activites based on the passed xml data
 		@param xml
 		@return list - the HTML to fit within the <ul> tags of the list
-	*/
+	
 	generateListXML: function( xml ){
 		var content = '';
 		$( xml ).find('MENU_ITEM').each(function(){
 			content += Activities.generateListBulletXML( $(this) );
 		});
 		return content;
-	},
+	},*/
 	/**
 		Generates a bullet point for the activity list
 		@param activity - a single activity object
@@ -273,7 +273,7 @@ var PopupActivities = {
 		Generates a bullet point for the activity list
 		@param xmlAct - a single activity object
 		@return bullet - the HTML for one row of the table
-	*/
+	
 	generateListBulletXML: function( xmlAct ){
 		var content = '';
 		
@@ -282,7 +282,7 @@ var PopupActivities = {
 		content += '">' + xmlAct.text + '</li>';
 		
 		return content;
-	}
+	}*/
 };
 
 /**
@@ -349,8 +349,8 @@ var initPopup = function(){
 	$.extend( News, PopupNews );
 	//Username.get(); //requires Chrome 6.0.472.36 (Beta)
 	Page.initBlockedMessages();
-	GE.fetchAndDisplayDataXML();
-	Activities.fetchAndDisplayDataXML();
+	GE.fetchAndDisplayData();
+	Activities.fetchAndDisplayData();
 	News.fetchAndDisplayData();
 };
 
