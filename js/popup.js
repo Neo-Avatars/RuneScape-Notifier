@@ -79,13 +79,15 @@ var PopupGE = {
 		Fetches personalised GE data.
 	*/
 	fetchAndDisplayData: function(){
-		var ajaxConfig = {
-			url: GE.coreURL,
-			success: function( data, status, xhr ){
+		GE.fetchData( function( data, status, xhr ){
 				GE.displayData( xhr );
-			}
-		};
-		$.ajax( ajaxConfig );
+			});
+	},
+	/**
+		Fetches personalised GE data.
+	*/
+	fetchAndDisplayDataXML: function(){
+		GE.displayDataXML( GE.fetchDataFromStorage() );
 	},
 	/**
 		Displays the GE data
@@ -94,13 +96,27 @@ var PopupGE = {
 	displayData: function( xhr ){
 		if( Auth.isAuthorised( xhr ) ){
 			Auth.hideAuthLink();
-			//alert('ge hide');
 			var offers = GE.parseOffers( xhr );
 			$('#GETable tbody').html( GE.generateTable( offers ) );
 			$('#GECompleteOffers').html( GE.generateOfferCompletionText( offers ) );
-			$('#GERunningOffers').html( GE.generateRunningOffersText( xhr ) );
+			$('#GERunningOffers').html( GE.generateRunningOffersText( offers ) );
 		} else {
 			//alert('ge show');
+			Auth.showAuthLink();
+		}
+	},
+	/**
+		Displays the GE data
+		@param xml
+	*/
+	displayDataXML: function( xml ){
+		if( Auth.isAuthorisedXML( xml ) ){
+			Auth.hideAuthLink();
+			var offers = GE.parseOffersXML( xml );
+			$('#GETable tbody').html( GE.generateTable( offers ) );
+			$('#GECompleteOffers').html( GE.generateOfferCompletionText( offers ) );
+			$('#GERunningOffers').html( GE.generateRunningOffersText( offers ) );
+		} else {
 			Auth.showAuthLink();
 		}
 	},
@@ -121,11 +137,11 @@ var PopupGE = {
 	},
 	/**
 		Returns the number of running offers
-		@param xhr - the XHR
+		@param offers[] - an array of offer objects
 		@return numberOfOffers - a string teling you how many offers you have
 	*/
-	generateRunningOffersText: function( xhr ){
-		return 'You have ' + GE.getRunningOffers( xhr ) + ' running offers.';
+	generateRunningOffersText: function( offers ){
+		return 'You have ' + GE.getRunningOffers( offers ) + ' running offers.';
 	},
 	/**
 		Generates a table of data based on the passed object
@@ -255,22 +271,18 @@ var PopupActivities = {
 	},
 	/**
 		Generates a bullet point for the activity list
-		@param activity - a single activity object
+		@param xmlAct - a single activity object
 		@return bullet - the HTML for one row of the table
 	*/
-	generateListBulletXML: function( xml ){
+	generateListBulletXML: function( xmlAct ){
 		var content = '';
 		
 		content += '<li class="';
-		act.allow ? content += 'allow' : content += 'disallow';
-		content += '">' + act.text + '</li>';
+		xmlAct.allow ? content += 'allow' : content += 'disallow';
+		content += '">' + xmlAct.text + '</li>';
 		
 		return content;
 	}
-};
-
-var PopupActivitiesXML = {
-	
 };
 
 /**
@@ -337,7 +349,7 @@ var initPopup = function(){
 	$.extend( News, PopupNews );
 	//Username.get(); //requires Chrome 6.0.472.36 (Beta)
 	Page.initBlockedMessages();
-	GE.fetchAndDisplayData();
+	GE.fetchAndDisplayDataXML();
 	Activities.fetchAndDisplayDataXML();
 	News.fetchAndDisplayData();
 };

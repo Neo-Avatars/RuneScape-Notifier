@@ -10,16 +10,18 @@ var BGGE = {
 		Does the various things to update the badge text which says how many GE offers have completed
 	*/
 	updateBadgeText: function(){
-		var ajaxConfig = {
-			url: GE.coreURL,
-			success: function( data, status, xhr ){
+		GE.fetchData( function( data, status, xhr ){
 				var offers = GE.parseOffers( xhr );
 				if( typeof offers.length !== 'undefined' ){
 					GE.countCompletedOffers( offers );
 				}
-			}
-		};
-		$.ajax( ajaxConfig );
+			});
+	},
+	/**
+		Fetches the GE offer data in the background so that it doesn't need to be loaded every time the popup is viewed
+	*/
+	fetchBGOffers: function(){
+		GE.fetchData( function( xml ){ GE.storeData( xml ); } );
 	}
 };
 
@@ -69,11 +71,12 @@ var BGNews = {
 	Sets various tasks running in the background
 */
 var initBGTasks = function(){
-	GE.updateBadgeText();
-	window.setInterval( GE.updateBadgeText, GE.updateInterval );
-	News.fetchBGNews();
-	window.setInterval( News.fetchBGNews, News.updateInterval );
-	Activities.fetchBGActivities();
+	//GE.updateBadgeText();
+	//window.setInterval( GE.updateBadgeText, GE.updateInterval );
+	//News.fetchBGNews();
+	//window.setInterval( News.fetchBGNews, News.updateInterval );
+	//Activities.fetchBGActivities();
+	GE.fetchBGOffers();
 };
 
 $(function() {

@@ -157,6 +157,32 @@ var GE = {
 	*/
 	coreURL: 'http://services.runescape.com/m=toolbar/geupdate.ws',
 	/**
+		Fetches the GE data
+		@param callback - the callback to perform when the data returns
+	*/
+	fetchData: function( callback ){
+		var ajaxConfig = {
+			url: GE.coreURL,
+			dataType: 'xml',
+			success: callback
+		};
+		$.ajax( ajaxConfig );
+	},
+	/**
+		Stores the data in localstorage
+		@param xml - the xml data
+	*/
+	storeData: function( xml ){
+		localStorage['GEoffersXMLString'] = XMLToString( xml );
+	},
+	/**
+		Fetches the data from localstorage
+		@return xml - the xml data
+	*/
+	fetchDataFromStorage: function(){
+		return XMLFromString( localStorage['GEoffersXMLString'] );
+	},
+	/**
 		Parses the GE offers, turning into an array of objects
 		@param xhr - the XHR
 		@return offers - the array of offers
@@ -176,19 +202,30 @@ var GE = {
 		return false;
 	},
 	/**
-		Returns the number of running offers
-		@param xhr - the XHR
-		@return noOffers - the number of running offers
+		Parses the GE offers, turning into an array of objects
+		@param xml - the XML data
+		@return offers - the array of offers
 	*/
-	getRunningOffers: function( xhr ){
-		if( Auth.checkBlock( xhr, GE.typePrefix ) ){
+	parseOffersXML: function( xml ){
+		if( Auth.checkBlockXML( xml, GE.typePrefix ) ){
 			return;
 		}
-		if( Auth.isAuthorised( xhr ) ){
-			var geOffers = xhr.responseXML.getElementsByTagName("MENU_ITEM");
-			return geOffers.length;
+		if( Auth.isAuthorisedXML( xml ) ){
+			var offers = new Array( $( xml ).find('MENU_ITEM').length );
+			$( xml ).find('MENU_ITEM').each(function( i ){
+				offers[i] = GE.splitOfferXML( $(this) );
+			});
+			return offers;
 		}
-		return 0;
+		return false;
+	},
+	/**
+		Returns the number of running offers
+		@param offers[] - an array of offer objects
+		@return noOffers - the number of running offers
+	*/
+	getRunningOffers: function( offers ){
+		return offers.length;
 	},
 	/**
 		Counts the number of offers that are complete
@@ -232,6 +269,44 @@ var GE = {
 		obj.geid = matchURL[1].match( Regexp.globalInt )[0];
 		
 		//getKeys( obj );
+		
+		return obj;
+	},
+	/**
+		Splits a GE info string into the various parts, converting it into a useful object with various bits of extra data
+		@param offer - the individual xml data object
+		@return obj - the offer, but split into the various parts so it can be manipulated
+	*/
+	splitOfferXML: function( offer ){
+		var obj = GE.splitOfferCaption( $( offer ).find('CAPTION').text() );
+
+		obj.iconURL = $( offer ).find('ICON_URL').text();
+		obj.gedbURL = $( offer ).find('URL').text();
+		obj.geid = obj.gedbURL.match( Regexp.globalInt )[0];
+		
+		//getKeys( obj );
+		return obj;
+	},
+	/**
+		Splits a GE offer CAPTION into the various parts and works out a few other bits of useful information about it
+		@param caption - the string that is the caption text
+		@return obj - an object with the bits of data in
+	*/
+	splitOfferCaption: function( caption ){
+		var split = caption.split(' ');
+		var matchInt = caption.match( Regexp.globalInt );
+		var obj = {};
+		obj.buying = caption.indexOf('Buying') === -1 ? false : true;
+		obj.quantity = parseInt( matchInt[0], 10 );
+		
+		//TODO: Make this something other than a crude hack - currently finds the bit between two numbers, then removes ' at ' from the end
+		var matchName = caption.match( Regexp.crudeGEName );
+		obj.name = matchName[1].substr( 0, matchName[1].length - 3);
+		
+		obj.price = parseInt( matchInt[1], 10 );
+		obj.costSoFar = parseInt( matchInt[3], 10 );
+		obj.quantityProcessed = obj.costSoFar === 0 ? 0 : parseInt( Math.round( obj.costSoFar / obj.price ), 10 );
+		obj.percent = parseInt( ( obj.quantityProcessed / obj.quantity ) * 100, 10 );
 		
 		return obj;
 	}
