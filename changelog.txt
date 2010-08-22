@@ -1,3 +1,10 @@
+0.4.4
+
+- Changed fetching News, personal GE and personal Activity data to background tasks
+- Re-formatted much of the GE and Activity parsing code
+	The above two changes make opening the popup considerably faster by removing the need to make XHRs
+	(it's typically 3-5x faster on a slow machine, more on more powerful ones)
+- Fixed some uncaught type conversion issues
 
 0.4.3
 

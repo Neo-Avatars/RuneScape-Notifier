@@ -1,11 +1,6 @@
 //http://services.runescape.com/m=toolbar/geupdate.ws
 //http://services.runescape.com/m=toolbar/activities.ws
 /**
-	States that the popup is being used and can be manipulated
-*/
-var popup = true;
-
-/**
 	Contains functions relating to initialising page content
 */
 var Page = {
@@ -47,7 +42,6 @@ var PopupAuth = {
 		Hides the link to the authorisation page and hides any other content.
 	*/
 	hideAuthLink: function(){
-		//alert('show');
 		$('#authAuthorise').hide();
 		$('#authUnuthorise').show();
 		$('#GE').show();
@@ -77,34 +71,10 @@ var PopupAuth = {
 var PopupGE = {
 	/**
 		Fetches personalised GE data.
-	
-	fetchAndDisplayData: function(){
-		GE.fetchData( function( data, status, xhr ){
-				GE.displayData( xhr );
-			});
-	},*/
-	/**
-		Fetches personalised GE data.
 	*/
 	fetchAndDisplayData: function(){
 		GE.displayData( GE.fetchDataFromStorage() );
 	},
-	/**
-		Displays the GE data
-		@param xhr
-	
-	displayData: function( xhr ){
-		if( Auth.isAuthorised( xhr ) ){
-			Auth.hideAuthLink();
-			var offers = GE.parseOffers( xhr );
-			$('#GETable tbody').html( GE.generateTable( offers ) );
-			$('#GECompleteOffers').html( GE.generateOfferCompletionText( offers ) );
-			$('#GERunningOffers').html( GE.generateRunningOffersText( offers ) );
-		} else {
-			//alert('ge show');
-			Auth.showAuthLink();
-		}
-	},*/
 	/**
 		Displays the GE data
 		@param xml
@@ -191,14 +161,6 @@ var PopupGE = {
 var PopupActivities = {
 	/**
 		Fetches personalised activity data.
-	
-	fetchAndDisplayData: function(){
-		Activities.fetchData( function( data, status, xhr ){
-				Activities.displayData( xhr );
-			});
-	},*/
-	/**
-		Fetches personalised activity data.
 	*/
 	fetchAndDisplayData: function(){
 		Activities.displayData( Activities.fetchDataFromStorage() );
@@ -217,21 +179,6 @@ var PopupActivities = {
 		}
 	},
 	/**
-		Displays the activity data
-		@param xhr
-	
-	displayData: function( xhr ){
-		if( Auth.isAuthorised( xhr ) ){
-			//alert('act hide');
-			Auth.hideAuthLink();
-			var activities = Activities.parseActivities( xhr );
-			$('#activityList').html( Activities.generateList( activities ) );
-		} else {
-			//alert('act show');
-			Auth.showAuthLink();
-		}
-	},*/
-	/**
 		Generates a list of activites based on the passed object
 		@param activities[] - an array of activity objects
 		@return list - the HTML to fit within the <ul> tags of the list
@@ -243,18 +190,6 @@ var PopupActivities = {
 		}
 		return content;
 	},
-	/**
-		Generates a list of activites based on the passed xml data
-		@param xml
-		@return list - the HTML to fit within the <ul> tags of the list
-	
-	generateListXML: function( xml ){
-		var content = '';
-		$( xml ).find('MENU_ITEM').each(function(){
-			content += Activities.generateListBulletXML( $(this) );
-		});
-		return content;
-	},*/
 	/**
 		Generates a bullet point for the activity list
 		@param activity - a single activity object
@@ -269,20 +204,6 @@ var PopupActivities = {
 		
 		return content;
 	},
-	/**
-		Generates a bullet point for the activity list
-		@param xmlAct - a single activity object
-		@return bullet - the HTML for one row of the table
-	
-	generateListBulletXML: function( xmlAct ){
-		var content = '';
-		
-		content += '<li class="';
-		xmlAct.allow ? content += 'allow' : content += 'disallow';
-		content += '">' + xmlAct.text + '</li>';
-		
-		return content;
-	}*/
 };
 
 /**
@@ -337,6 +258,14 @@ var PopupNews = {
 	//	$('#authUsername').text( username );
 	//}
 //};
+
+/**
+	Reloads all the feeds and re-initialises the UI of the popup
+*/
+var reloadPopup = function(){
+	fetchBackgroundFeeds();
+	initPopup();
+};
 
 /**
 	Initialises the popup content

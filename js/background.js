@@ -20,7 +20,7 @@ var BGGE = {
 		Fetches the GE offer data in the background so that it doesn't need to be loaded every time the popup is viewed
 	*/
 	fetchBGOffers: function(){
-		GE.fetchandStoreData();
+		GE.fetchAndStoreData();
 	}
 };
 
@@ -67,15 +67,22 @@ var BGNews = {
 //http://julianapena.com/2010/01/how-to-build-a-chrome-extension-part-2-options-and-localstorage/
 
 /**
+	Fetches all of the background feeds
+*/
+var fetchBackgroundFeeds = function(){
+	GE.updateBadgeText();
+	News.fetchBGNews();
+	Activities.fetchBGActivities();
+};
+
+/**
 	Sets various tasks running in the background
 */
 var initBGTasks = function(){
-	GE.updateBadgeText();
+	fetchBackgroundFeeds();
 	window.setInterval( GE.updateBadgeText, GE.updateInterval );
-	News.fetchBGNews();
 	window.setInterval( News.fetchBGNews, News.updateInterval );
-	Activities.fetchBGActivities();
-	GE.fetchBGOffers();
+	window.setInterval( Activities.fetchBGActivities(), Activities.updateInterval );
 };
 
 $(function() {

@@ -27,44 +27,6 @@ var Auth = {
 		return false;
 	},
 	/**
-		Based on an XML xhr response, checks to see if it contains a link to the authorisation page (is not suthorised).
-		@param xhr - the XHR
-		@return isAuthorised
-	
-	isAuthorised: function( xhr ){
-		var comparison = 'toolbar/authorise';
-		return xhr.responseText.indexOf( comparison ) === -1 ? true : false;
-	},*/
-	/**
-		Based on a xhr response, checks to see if it is null (too many requests have been made, causing you to be blocked from Jagex's servers)
-		@param xhr - the XHR
-		@return isBlocked - boolean
-	
-	isBlocked: function( xhr ){
-		if( xhr.getResponseHeader('Content-Length') == 0 ){
-			return true;
-		}
-		return false;
-	},*/
-	/**
-		Checks to see if the response data indicates that the user has been blocked.
-		@param xhr
-		@param typePrefix - a prefix used to identify HTML elements relating to that object
-		@return A boolean saying whether or not you're blocked
-	
-	checkBlock: function( xhr, typePrefix ){
-		if( Auth.isBlocked( xhr ) ){
-			if( popup ){
-				Auth.displayBlockedInfo( typePrefix );
-			}
-			return true;
-		}
-		if( popup ){
-			Auth.hideBlockedInfo( typePrefix );
-		}
-		return false;
-	},*/
-	/**
 		Checks to see if the response data indicates that the user has been blocked.
 		@param xml
 		@param typePrefix - a prefix used to identify HTML elements relating to that object
@@ -72,12 +34,12 @@ var Auth = {
 	*/
 	checkBlock: function( xml, typePrefix ){
 		if( Auth.isBlocked( xml ) ){
-			if( popup ){
+			if( typeof Auth.displayBlockedInfo === 'function' ){
 				Auth.displayBlockedInfo( typePrefix );
 			}
 			return true;
 		}
-		if( popup ){
+		if( typeof Auth.hideBlockedInfo === 'function' ){
 			Auth.hideBlockedInfo( typePrefix );
 		}
 		return false;
@@ -177,34 +139,15 @@ var GE = {
 		@param xml - the xml data
 	*/
 	storeData: function( xml ){
-		localStorage['GEoffersXMLString'] = XMLToString( xml );
+		Storage.setItem( Storage.GE.XMLstring, XMLToString( xml ) );
 	},
 	/**
 		Fetches the data from localstorage
 		@return xml - the xml data
 	*/
 	fetchDataFromStorage: function(){
-		return XMLFromString( localStorage['GEoffersXMLString'] );
+		return XMLFromString( Storage.getItem( Storage.GE.XMLstring ) );
 	},
-	/**
-		Parses the GE offers, turning into an array of objects
-		@param xhr - the XHR
-		@return offers - the array of offers
-	
-	parseOffers: function( xhr ){
-		if( Auth.checkBlock( xhr, GE.typePrefix ) ){
-			return;
-		}
-		if( Auth.isAuthorised( xhr ) ){
-			var geOffers = xhr.responseXML.getElementsByTagName("MENU_ITEM");
-			var offers = new Array( geOffers.length );
-			for( var i = 0, offer; offer = geOffers[i]; i++){
-				offers[i] = GE.splitOffer( offer.textContent );
-			}
-			return offers;
-		}
-		return false;
-	},*/
 	/**
 		Parses the GE offers, turning into an array of objects
 		@param xml - the XML data
@@ -247,36 +190,6 @@ var GE = {
 		return complete;
 	},
 	/**
-		Splits a GE info string into the various parts, converting it into a useful object.
-		@param offer - a string about a GE offer
-		@return obj - the offer, but split into the various parts so it can be manipulated
-	
-	splitOffer: function( offer ){
-		var split = offer.split(' ');
-		var matchInt = offer.match( Regexp.globalInt );
-		var obj = {};
-		obj.buying = offer.indexOf('Buying') === -1 ? false : true;
-		obj.quantity = parseInt( matchInt[0], 10 );
-		
-		//TODO: Make this something other than a crude hack - currently finds the bit between two numbers, then removes ' at ' from the end
-		var matchName = offer.match( Regexp.crudeGEName );
-		obj.name = matchName[1].substr( 0, matchName[1].length - 3);
-		
-		obj.price = parseInt( matchInt[1], 10 );
-		obj.costSoFar = parseInt( matchInt[3], 10 );
-		obj.quantityProcessed = obj.costSoFar === 0 ? 0 : parseInt( Math.round( obj.costSoFar / obj.price ), 10 );
-		obj.percent = parseInt( ( obj.quantityProcessed / obj.quantity ) * 100, 10 );
-		
-		var matchURL = offer.match( Regexp.URL );
-		obj.iconURL = matchURL[0];
-		obj.gedbURL = matchURL[1];
-		obj.geid = matchURL[1].match( Regexp.globalInt )[0];
-		
-		//getKeys( obj );
-		
-		return obj;
-	},*/
-	/**
 		Splits a GE info string into the various parts, converting it into a useful object with various bits of extra data
 		@param offer - the individual xml data object
 		@return obj - the offer, but split into the various parts so it can be manipulated
@@ -287,8 +200,7 @@ var GE = {
 		obj.iconURL = $( offer ).find('ICON_URL').text();
 		obj.gedbURL = $( offer ).find('URL').text();
 		obj.geid = obj.gedbURL.match( Regexp.globalInt )[0];
-		
-		//getKeys( obj );
+
 		return obj;
 	},
 	/**
@@ -353,34 +265,15 @@ var Activities = {
 		@param xml - the xml data
 	*/
 	storeData: function( xml ){
-		localStorage['activityXMLString'] = XMLToString( xml );
+		Storage.setItem( Storage.Activities.XMLstring, XMLToString( xml ) );
 	},
 	/**
 		Fetches the data from localstorage
 		@return xml - the xml data
 	*/
 	fetchDataFromStorage: function(){
-		return XMLFromString( localStorage['activityXMLString'] );
+		return XMLFromString( Storage.getItem( Storage.Activities.XMLstring ) );
 	},
-	/**
-		Parses the activities, turning into an array of objects
-		@param xhr - the XHR
-		@return activities - the array of activities
-	
-	parseActivities: function( xhr ){
-		if( Auth.checkBlock( xhr, Activities.typePrefix ) ){
-			return;
-		}
-		if( Auth.isAuthorised( xhr ) ){
-			var rawActivities = xhr.responseXML.getElementsByTagName("MENU_ITEM");
-			var activities = new Array( rawActivities.length );
-			for(var i = 0, activity; activity = rawActivities[i]; i++){
-				activities[i] = Activities.splitActivity( activity.textContent );
-			}
-			return activities;
-		}
-		return false;
-	},*/
 	/**
 		Parses the activities, turning into an array of objects
 		@param xml 
@@ -400,31 +293,18 @@ var Activities = {
 		return false;
 	},
 	/**
-		Splits a activity info string into the various parts, converting it into a useful object.
-		@param  act - a string about an activity
-		@return obj - the activity, but split into the various parts so it can be manipulated
-	
-	splitActivity: function( act ){
-		var matchURL = act.match( Regexp.URL );
-		var obj = {};
-		obj.text = act.substr( 0, act.indexOf('http') );
-		obj.allow = act.indexOf('disallow') === -1 ? true : false;
-		obj.icon = matchURL[0];
-		obj.rskbLink = matchURL[1];
-		//getKeys( obj );
-		return obj;
-	},*/
-	/**
 		Converts a activity xml segment into an object with extra data
 		@param  act - the individual xml data object
 		@return obj - the activity, but split into the various parts
 	*/
 	splitActivity: function( act ){
 		var obj = {};
+		
 		obj.text = $( act ).find('CAPTION').text();
 		obj.icon = $( act ).find('ICON_URL').text();
 		obj.allow = obj.icon.indexOf('disallow') === -1 ? true : false;
 		obj.rskbLink = $( act ).find('URL').text();
+		
 		return obj;
 	}
 };
@@ -458,20 +338,18 @@ var News = {
 		@param formattedFeed - the formatted feed
 	*/
 	storeFormattedRSS: function( content ){
-		localStorage[ Storage.News.formattedFeed ] = content;
+		Storage.setItem( Storage.News.formattedFeed, content );
 	},
 	/**
 		Fetches the formatted RSS feed from storage, checks to see if there's anything there and if there isn't, trys to fetch it
 		@return formattedFeed - the formatted feed for the popup
 	*/
 	fetchFormattedRSS: function(){
-		var content = localStorage[ Storage.News.formattedFeed ];
-		//try to fetch it again if there's nothing stored
-		if( content === null || typeof content === 'undefined' || content.length === 0 ){
-			News.fetchBGNews();
-			content = localStorage[ Storage.News.formattedFeed ];
-		}
-		return content
+		return Storage.getItem( Storage.News.formattedFeed, function(){
+			//News.fetchBGNews();
+			News.fetchRSS( function( xml ){ News.formatAndStoreRSS( xml ); } );
+			News.fetchAndDisplayData();
+		});
 	},
 	/**
 		Creates the content to display the RSS feed
@@ -526,6 +404,66 @@ var Number = {
 	Various keys used for localStorage
 */
 var Storage = {
+	//http://paperkilledrock.com/2010/05/html5-localstorage-part-one/
+	//http://dev.w3.org/html5/webstorage/
+	/**
+		Stores some data, referencing it with the specified key
+		@param key - the key with which to access the data later on
+		@param value - a string to store
+	*/
+	setItem: function( key, value ){
+		if( typeof value !== 'string' ){
+			return; //can only store strings
+		}
+		try {
+			localStorage[ key ] = value;
+		} catch ( e ) {
+			 if (e == QUOTA_EXCEEDED_ERR) {
+				//data wasn't successfully saved due to quota exceed so threw an error
+			}
+		}
+	},
+	/**
+		Fetches some data specified by the passed key
+		@param key - the storage location at which the data can be found
+		@param fallback - an optional function to call to try and fetch data in the case that there's nothing stored
+		@return value - the data that was stored (a string)
+	*/
+	getItem: function( key, fallback ){
+		var content = localStorage[ key ];
+		//try to fetch it again if there's nothing stored
+		//TODO: fix - it currently goes into a strange loop
+		//if( content === null || typeof content === 'undefined' || content.length === 0 ){
+		//	if( typeof fallback === 'function' ){
+		//		alert('is a function');
+		//		$( fallback );
+		//		alert('run the callback');
+		//		content = localStorage[ key ];
+		//		return content;
+		//	} else {
+		//		content = '';
+		//	}
+		//}
+		return content;
+	},
+	/**
+		Storage keys relating to GE offers
+	*/
+	GE: {
+		/**
+			The storage key for the personalised GE XML data
+		*/
+		XMLstring: 'personalGEoffersXML'
+	},
+	/**
+		Storage keys relating to Activities
+	*/
+	Activities: {
+		/**
+			The storage key for the personalised Activities XML data
+		*/
+		XMLstring: 'personalActivitiesXML'
+	},
 	/**
 		Storage keys relating to the news
 	*/
@@ -533,7 +471,7 @@ var Storage = {
 		/**
 			The storage key for the news RSS feed
 		*/
-		formattedFeed: 'newsRSS'
+		formattedFeed: 'formattedNewsRSS'
 	}
 };
 
