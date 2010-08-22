@@ -35,7 +35,7 @@ var BGNews = {
 		Fetches the news feed in the background so that it doesn't need to be loaded every time the popup is viewed
 	*/
 	fetchBGNews: function(){
-		News.fetchRSS( function( xml ){ News.formatAndStoreRSS( xml ) } );
+		News.fetchRSS( function( xml ){ News.formatAndStoreRSS( xml ); } );
 	},
 	/**
 		Stores the content of the news RSS feed in local storage
@@ -52,11 +52,11 @@ var BGNews = {
 /**
 	Sets various tasks running in the background
 */
-var initBGTasks = {
+var initBGTasks = function(){
 	GE.updateBadgeText();
-	window.setInterval(	GE.updateBadgeText, GE.updateInterval );
+	window.setInterval( GE.updateBadgeText, GE.updateInterval );
 	News.fetchBGNews();
-	window.setInterval(	News.fetchBGNews, News.updateInterval );
+	window.setInterval( News.fetchBGNews, News.updateInterval );
 };
 
 $(function() {

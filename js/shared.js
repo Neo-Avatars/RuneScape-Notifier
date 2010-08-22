@@ -281,7 +281,7 @@ var News = {
 	fetchFormattedRSS: function(){
 		var content = localStorage[ Storage.News.formattedFeed ];
 		//try to fetch it again if there's nothing stored
-		if( content.length === 0 || content === null ){
+		if( content === null || typeof content === 'undefined' || content.length === 0 ){
 			News.fetchBGNews();
 			content = localStorage[ Storage.News.formattedFeed ];
 		}
