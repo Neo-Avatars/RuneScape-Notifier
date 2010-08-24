@@ -63,6 +63,10 @@ var Auth = {
 */
 var Browser = {
 	/**
+		The default tooltip
+	*/
+	defaultTooltip: 'RuneScape Notifier',
+	/**
 		Opens a new tab
 		@param URL - the URL to open in the new tab
 	*/
@@ -94,6 +98,24 @@ var Browser = {
 			title: text
 		};
 		chrome.browserAction.setTitle( details );
+	},
+	/**
+		Works out the text to go in the icon tooltip based on feed data
+		@return text - the text to go in the tooltip
+	*/
+	workOutBadgeTooltipText: function(){
+		var GEObj = GE.parseOffers( GE.fetchDataFromStorage() );
+		var GECompleted = GE.countCompletedOffers( GEObj );
+		var GETotal = GE.getRunningOffers( GEObj );
+		
+		var ActObj = Activities.parseActivities( Activities.fetchDataFromStorage() );
+		var ActTotal = Activities.countTotalActivities( ActObj );
+		var ActAvailable = Activities.countAvailableActivities( ActObj );
+		
+		var tooltip = Browser.defaultTooltip + ' - ' + GECompleted + '/' + GETotal + ' GE offers completed. ';
+		tooltip += ActAvailable + '/' + ActTotal + ' Activities available.';
+		
+		return tooltip;
 	}
 	//, //requires Chrome 6.0.472.36 (Beta) to access cookies
 	/**
@@ -161,7 +183,7 @@ var GE = {
 	/**
 		Parses the GE offers, turning into an array of objects
 		@param xml - the XML data
-		@return offers - the array of offers
+		@return offers[] - the array of offers
 	*/
 	parseOffers: function( xml ){
 		if( Auth.checkBlock( xml, GE.typePrefix ) ){
@@ -309,7 +331,7 @@ var Activities = {
 	/**
 		Parses the activities, turning into an array of objects
 		@param xml 
-		@return activities - the array of activities
+		@return activities[] - the array of activities
 	*/
 	parseActivities: function( xml ){
 		if( Auth.checkBlock( xml, Activities.typePrefix ) ){

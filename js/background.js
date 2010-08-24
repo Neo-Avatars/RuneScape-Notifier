@@ -21,6 +21,7 @@ var BGGE = {
 	*/
 	fetchBGOffers: function(){
 		GE.fetchAndStoreData();
+		Browser.setBadgeTooltip( Browser.workOutBadgeTooltipText() );
 	}
 };
 
@@ -37,6 +38,7 @@ var BGActivities = {
 	*/
 	fetchBGActivities: function(){
 		Activities.fetchAndStoreData();
+		Browser.setBadgeTooltip( Browser.workOutBadgeTooltipText() );
 	}
 };
 
@@ -73,6 +75,7 @@ var fetchBackgroundFeeds = function(){
 	GE.updateBadgeText();
 	News.fetchBGNews();
 	Activities.fetchBGActivities();
+	Browser.setBadgeTooltip( Browser.workOutBadgeTooltipText() );
 };
 
 /**
