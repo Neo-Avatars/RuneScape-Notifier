@@ -234,8 +234,10 @@ var PopupNews = {
 		@param content - the content to display
 	*/
 	displayFeedContent: function( content ){
-		$('#newsPosts').html( content );
-		$('#newsPosts').accordion({autoHeight: false});
+		$('#newsPosts').html('<div id="newsPostsContent"></div>'); //need an inner container to be able to re-acordionify it
+		$('#newsPostsContent').html( content );
+		$('#newsPostsContent').accordion({autoHeight: false});
+		//alert('accordioned');
 	}
 };
 
@@ -263,24 +265,31 @@ var PopupNews = {
 	Reloads all the feeds and re-initialises the UI of the popup
 */
 var reloadPopup = function(){
-	fetchBackgroundFeeds();
-	initPopup();
+	chrome.extension.getBackgroundPage().fetchBackgroundFeeds();
+	fetchAndDisplayPopupData();
+};
+
+/**
+	Fetches and displays various feeds visually in the popup
+*/
+var fetchAndDisplayPopupData = function(){
+	$("ul.tabs").tabs("div.panes > div");
+	GE.fetchAndDisplayData();
+	Activities.fetchAndDisplayData();
+	News.fetchAndDisplayData();
 };
 
 /**
 	Initialises the popup content
 */
 var initPopup = function(){
-	$("ul.tabs").tabs("div.panes > div");
 	$.extend( Auth, PopupAuth );
 	$.extend( GE, PopupGE );
 	$.extend( Activities, PopupActivities );
 	$.extend( News, PopupNews );
 	//Username.get(); //requires Chrome 6.0.472.36 (Beta)
 	Page.initBlockedMessages();
-	GE.fetchAndDisplayData();
-	Activities.fetchAndDisplayData();
-	News.fetchAndDisplayData();
+	fetchAndDisplayPopupData();
 };
 
 $(function() {
