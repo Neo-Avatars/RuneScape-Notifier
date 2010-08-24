@@ -84,6 +84,16 @@ var Browser = {
 			text: text
 		};
 		chrome.browserAction.setBadgeText( details );
+	},
+	/**
+		Set the title of the browser action (the tooltip when you hover over the extension icon)
+		@param text - the text to display
+	*/
+	setBadgeTooltip: function( text ){
+		var details = {
+			title: text
+		};
+		chrome.browserAction.setTitle( details );
 	}
 	//, //requires Chrome 6.0.472.36 (Beta) to access cookies
 	/**
@@ -273,6 +283,28 @@ var Activities = {
 	*/
 	fetchDataFromStorage: function(){
 		return XMLFromString( Storage.getItem( Storage.Activities.XMLstring ) );
+	},
+	/**
+		Counts the total number of activities that can be completed (whether they can be done now or not)
+		@param activities[] - an array of activity objects
+		@return number - a number of activities that there are in the list
+	*/
+	countTotalActivities: function( activities ){
+		return activities.length;
+	},
+	/**
+		Counts the number of available activities that are available to complete at this point in time according to the data
+		@param activities[] - an array of activity objects
+		@return number - a number of activities that can be completed
+	*/
+	countAvailableActivities: function( activities ){
+		var number = 0;
+		for( var i = 0; i < activities.length; i++){
+			if( activities[i].allow ){
+				number++;
+			}
+		}
+		return number;
 	},
 	/**
 		Parses the activities, turning into an array of objects

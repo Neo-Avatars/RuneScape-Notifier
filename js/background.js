@@ -82,7 +82,7 @@ var initBGTasks = function(){
 	fetchBackgroundFeeds();
 	window.setInterval( GE.updateBadgeText, GE.updateInterval );
 	window.setInterval( News.fetchBGNews, News.updateInterval );
-	window.setInterval( Activities.fetchBGActivities(), Activities.updateInterval );
+	window.setInterval( Activities.fetchBGActivities, Activities.updateInterval );
 };
 
 $(function() {
