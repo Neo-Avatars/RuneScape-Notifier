@@ -1,3 +1,10 @@
+0.4.5
+
+- Made the 'Reload Popup' button work again
+- Added a temporary tooltip to indicate that it may take a couple of clicks for the data to update
+- Fixed the personalised Activity data feed so that it actually loads in the background every 10 mins
+- Added a tooltip to the icon to tell you some of the core numbers
+
 0.4.4
 
 - Changed fetching News, personal GE and personal Activity data to background tasks
