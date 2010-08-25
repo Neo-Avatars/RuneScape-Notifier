@@ -1,9 +1,16 @@
+0.4.6
+
+- Removed the GE icons from the extension icon visible in chrome://extensions
+- Fixed the 'information essays' so they show when there's no data to display
+- Fixed the calls to the icon tooltip so that it updates with the data
+- Added notifications for GE Offer, Activity and News updates
+
 0.4.5
 
 - Made the 'Reload Popup' button work again
-- Added a temporary tooltip to indicate that it may take a couple of clicks for the data to update
+- Added a temporary tooltip to indicate that it may take a couple of clicks for the data to update when trying to Reload Popup
 - Fixed the personalised Activity data feed so that it actually loads in the background every 10 mins
-- Added a tooltip to the icon to tell you some of the core numbers
+- Added a tooltip to the icon to tell you some of the useful numbers to prevent having to keep opening the popup
 
 0.4.4
 

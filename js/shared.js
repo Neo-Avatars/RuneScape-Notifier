@@ -21,7 +21,7 @@ var Auth = {
 		@return isBlocked - boolean
 	*/
 	isBlocked: function( xml ){
-		if( xml.length === 0 ){
+		if( XMLToString( xml ).indexOf('parsererror') !== -1 ){
 			return true;
 		}
 		return false;
@@ -116,7 +116,25 @@ var Browser = {
 		tooltip += ActAvailable + '/' + ActTotal + ' Activities available.';
 		
 		return tooltip;
-	}
+	},
+	/**
+		Shows a browser notification
+		@param title - the title string
+		@param body - the main notification text
+		@param iconType - the 'type' part of the URL of the icon to display
+	*/
+	notification: function( title, body, iconType ){
+		var notification = webkitNotifications.createNotification(
+			'img/notification_icon_' + iconType + '.png',  // icon url - can be relative
+			title,  // notification title
+			body  // notification body text
+		);
+		// Then show the notification.
+		notification.show();
+		setTimeout(function(){
+			notification.cancel();
+		}, 7000);
+	},
 	//, //requires Chrome 6.0.472.36 (Beta) to access cookies
 	/**
 		Returns the content of the specified cookie
@@ -159,10 +177,28 @@ var GE = {
 		$.ajax( ajaxConfig );
 	},
 	/**
+		The title for a GE update notification
+	*/
+	updateNotificationTitle: 'GE Offers Update',
+	/**
+		The body text for a GE update notification
+	*/
+	updateNotificationBody: 'One or more of your GE offers have updated!',
+	/**
+		Displays a notification if there have been any changes between the new XML and the stored XML
+		@param newXML - the new xml data
+	*/
+	updateNotification: function( newXML ){
+		if( XMLToString( GE.fetchDataFromStorage() ) !== XMLToString( newXML ) ){
+			Browser.notification( GE.updateNotificationTitle, GE.updateNotificationBody, GE.typePrefix );
+		}
+	},
+	/**
 		Fetches and stores the GE data
 	*/
 	fetchAndStoreData: function(){
 		GE.fetchData( function( xml ){
+			GE.updateNotification( xml );
 			GE.storeData( xml );
 		});
 	},
@@ -204,6 +240,9 @@ var GE = {
 		@return noOffers - the number of running offers
 	*/
 	getRunningOffers: function( offers ){
+		if( typeof offers === 'undefined' ){
+			return 0;
+		}
 		return offers.length;
 	},
 	/**
@@ -213,6 +252,10 @@ var GE = {
 	*/
 	countCompletedOffers: function( offers ){
 		var complete = 0;
+		if( GE.getRunningOffers( offers ) === 0 ){
+			Browser.setBadgeText( complete.toString() );
+			return complete;
+		}
 		for(var i = 0, offer; offer = offers[i]; i++){
 			if( offer.percent === 100 ){
 				complete++;
@@ -285,10 +328,31 @@ var Activities = {
 		$.ajax( ajaxConfig );
 	},
 	/**
+		The title for an Activity update notification
+	*/
+	updateNotificationTitle: 'Activity / D&D Update',
+	/**
+		The body text for an Activity update notification
+	*/
+	updateNotificationBody: 'The status of one or more of your available D&Ds has updated!',
+	/**
+		Displays a notification if there have been any changes between the new XML and the stored XML
+		@param newXML - the new xml data
+	*/
+	updateNotification: function( newXML ){
+		var oldActivites = Activities.parseActivities( Activities.fetchDataFromStorage() );
+		var newActivites = Activities.parseActivities( newXML );
+		if( Activities.countAvailableActivities( oldActivites )
+				!== Activities.countAvailableActivities( newActivites )){
+			Browser.notification( Activities.updateNotificationTitle, Activities.updateNotificationBody, Activities.typePrefix );
+		}
+	},
+	/**
 		Fetches and stores activity data
 	*/
 	fetchAndStoreData: function(){
 		Activities.fetchData( function( xml ){
+			Activities.updateNotification( xml );
 			Activities.storeData( xml );
 		});
 	},
@@ -312,6 +376,9 @@ var Activities = {
 		@return number - a number of activities that there are in the list
 	*/
 	countTotalActivities: function( activities ){
+		if( typeof activities === 'undefined' ){
+			return 0;
+		}
 		return activities.length;
 	},
 	/**
@@ -321,6 +388,9 @@ var Activities = {
 	*/
 	countAvailableActivities: function( activities ){
 		var number = 0;
+		if( Activities.countTotalActivities( activities ) === 0 ){
+			return number;
+		}
 		for( var i = 0; i < activities.length; i++){
 			if( activities[i].allow ){
 				number++;
@@ -386,6 +456,23 @@ var News = {
 			success: callback
 		};
 		$.ajax( ajaxConfig );
+	},
+	/**
+		The title for a new update notification
+	*/
+	updateNotificationTitle: 'News Update',
+	/**
+		The body text for an Activity update notification
+	*/
+	updateNotificationBody: 'The latest RuneScape News has updated!',
+	/**
+		Displays a notification if there have been any changes between the new XML and the stored XML
+		@param newContent - the new formatted content
+	*/
+	updateNotification: function( newContent ){
+		if( News.fetchFormattedRSS() !== newContent ){
+			Browser.notification( News.updateNotificationTitle, News.updateNotificationBody, News.typePrefix );
+		}
 	},
 	/**
 		Stores the formatted RSS feed in storage

@@ -80,6 +80,9 @@ var PopupGE = {
 		@param xml
 	*/
 	displayData: function( xml ){
+		if( Auth.checkBlock( xml, GE.typePrefix ) ){
+			return;
+		}
 		if( Auth.isAuthorised( xml ) ){
 			Auth.hideAuthLink();
 			var offers = GE.parseOffers( xml );
@@ -170,6 +173,9 @@ var PopupActivities = {
 		@param xml
 	*/
 	displayData: function( xml ){
+		if( Auth.checkBlock( xml, Activities.typePrefix ) ){
+			return;
+		}
 		if( Auth.isAuthorised( xml ) ){
 			Auth.hideAuthLink();
 			var activities = Activities.parseActivities( xml );
@@ -265,6 +271,7 @@ var PopupNews = {
 	Reloads all the feeds and re-initialises the UI of the popup
 */
 var reloadPopup = function(){
+	//http://stackoverflow.com/questions/2153712/jquery-multiple-ajax-check-for-all-done-order-not-important
 	chrome.extension.getBackgroundPage().fetchBackgroundFeeds();
 	fetchAndDisplayPopupData();
 };

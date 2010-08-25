@@ -12,16 +12,13 @@ var BGGE = {
 	updateBadgeText: function(){
 		GE.fetchBGOffers();
 		var offers = GE.parseOffers( GE.fetchDataFromStorage() );
-		if( typeof offers.length !== 'undefined' ){
-			GE.countCompletedOffers( offers );
-		}
+		GE.countCompletedOffers( offers );
 	},
 	/**
 		Fetches the GE offer data in the background so that it doesn't need to be loaded every time the popup is viewed
 	*/
 	fetchBGOffers: function(){
 		GE.fetchAndStoreData();
-		Browser.setBadgeTooltip( Browser.workOutBadgeTooltipText() );
 	}
 };
 
@@ -38,7 +35,6 @@ var BGActivities = {
 	*/
 	fetchBGActivities: function(){
 		Activities.fetchAndStoreData();
-		Browser.setBadgeTooltip( Browser.workOutBadgeTooltipText() );
 	}
 };
 
@@ -62,6 +58,7 @@ var BGNews = {
 	*/
 	formatAndStoreRSS: function( xml ){
 		var content = News.createFeedContent( xml );
+		News.updateNotification( content );
 		News.storeFormattedRSS( content );
 	}
 };
