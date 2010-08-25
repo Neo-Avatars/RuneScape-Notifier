@@ -200,6 +200,7 @@ var GE = {
 		GE.fetchData( function( xml ){
 			GE.updateNotification( xml );
 			GE.storeData( xml );
+			Browser.setBadgeTooltip( Browser.workOutBadgeTooltipText() );
 		});
 	},
 	/**
@@ -354,6 +355,7 @@ var Activities = {
 		Activities.fetchData( function( xml ){
 			Activities.updateNotification( xml );
 			Activities.storeData( xml );
+			Browser.setBadgeTooltip( Browser.workOutBadgeTooltipText() );
 		});
 	},
 	/**
