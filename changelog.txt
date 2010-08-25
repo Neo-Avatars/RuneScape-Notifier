@@ -3,7 +3,7 @@
 - Removed the GE icons from the extension icon visible in chrome://extensions
 - Fixed the 'information essays' so they show when there's no data to display
 - Fixed the calls to the icon tooltip so that it updates with the data
-- Added notifications for GE Offer, Activity and News updates
+- Added notifications for GE Offer, Activity and News updates (icons don't seem to work properly in Chrome <6)
 
 0.4.5
 
