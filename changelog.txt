@@ -1,3 +1,8 @@
+0.5.0
+
+- New UI for the GE offers to reduce the walls of text there previously
+- Made the popup slightly narrower
+
 0.4.6
 
 - Removed the GE icons from the extension icon visible in chrome://extensions

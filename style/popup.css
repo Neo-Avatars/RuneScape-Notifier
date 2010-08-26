@@ -1,5 +1,5 @@
 body {
-	min-width:550px;
+	min-width:450px;
 	font-family: Verdana, Tahoma, Arial, Times, Serif;
 	font-size:12px;
 }
@@ -32,8 +32,7 @@ body {
 p.info {
 	padding:3px 3px 3px 68px;
     color:#000;
-    -moz-border-radius:6px;
-    -webkit-border-radius:6px;
+    border-radius:6px;
     clear:left;
     margin:0 1em .5em 1em;
     border:2px solid #457F9F;
@@ -62,7 +61,6 @@ table.classyTable th,
 table.classyTable td {
     border:1px solid #381F04;
     text-align:center;
-    font-size:10px;
 }
 
 table.classyTable thead {
@@ -93,4 +91,79 @@ li.allow {
 
 li.disallow {
 	background-image:url(http://www.runescape.com/img/toolbar/icons/activities-icon-disallow.png);
+}
+
+.GEoffer {
+	padding:2px;
+	margin:2px;
+	font-size:12px;
+}
+
+.GEofferItemPic {
+	/*background:#433621;
+	border:2px solid #4A3E2A;
+	border-radius:5px;
+	width:36px;
+	height:36px;
+	margin:auto;
+	padding:2px;*/
+}
+
+.GEofferItemPic:hover {
+	/*background:#988D36;
+	border:2px solid #545100;*/
+}
+
+.GEofferInfo {
+	padding:3px;
+}
+
+.GEofferItemBuySell, .GEofferItemName {
+	color:#392F27;
+	float:left;
+	font-weight:bold;
+	/*text-shadow:1px 1px 0 #EBE573;*/
+}
+
+.GEofferItemBuySell {
+	font-style:italic;
+}
+
+.GEofferItemPrice {
+	float:right;
+	color:#C90;
+	text-shadow:1px 1px #000;
+}
+
+.GEofferPercentage {
+	color:#EBE573;
+	text-shadow:1px 1px #000;
+}
+
+.GEofferPercentageIndicator {
+	background:#392F27;
+	width:200px;
+	height:15px;
+	border:1px solid #000;
+	border-radius:4px;
+	float:right;
+	cursor:default;
+}
+
+.GEofferPercentageIndicatorInner {
+	background:#C68B01;
+	border-radius:4px;
+	height:100%;
+	color:#EBE573;
+	font-size:10px;
+	text-shadow:1px 1px #000;
+	text-align:left;
+}
+
+.GEofferQuantityPrice, .GEofferQuantityRaw {
+	padding-left:4px;
+}
+
+.GEofferQuantityPrice {
+	display:none;
 }

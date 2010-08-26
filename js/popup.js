@@ -102,9 +102,9 @@ var PopupGE = {
 		var complete = GE.countCompletedOffers( offers );
 		var text = complete + ' offer';
 		if( complete === 1 ){
-			text += ' has completed';
+			text += ' has completed.';
 		} else {
-			text += 's have completed';
+			text += 's have completed.';
 		}
 		return text;
 	},
@@ -135,24 +135,38 @@ var PopupGE = {
 	*/
 	generateTableRow: function( offer ){
 		var content = '';
+
+		content += '<tr class="GEoffer GEofferTopRow';
+		if( offer.percent === 100 ){
+			content += ' completed'
+		}
+		content += '"><td rowspan="2" class="GEofferItemPicCell">\
+			<div class="GEofferItemPic">\
+			<a href="#" onclick="Browser.openTab(\'' + offer.gedbURL + 
+				'\');" title="View in the Grand Exchange Database">\
+			<img src="' + offer.iconURL + '" alt="' + offer.name + '" /></a></div></td><td class="GEofferInfo">';
+		content += '<span class="GEofferItemName">' + offer.name + '</span>';
 		
-		content += '<tr';
+		content += '<span class="GEofferItemPrice">' + Number.addCommas( offer.price ) + 'gp</span>';
+		content += '</td></tr><tr class="GEoffer GEofferBottomRow';
 		if( offer.percent === 100 ){
-			content += ' class="completed"'
+			content += ' completed'
 		}
-		content += '><td rowspan="2">\
-			<a href="#" onclick="Browser.openTab(\'' + offer.gedbURL + '\');" title="View in the Grand Exchange Database">\
-			<img src="' + offer.iconURL + '" alt="' + offer.name + '" /></a></td><td>';
-		offer.buying ? content += 'Buying ' : content += 'Selling ';
-		content += offer.quantity + ' ' + offer.name + ' at ' + Number.addCommas( offer.price ) + 'gp each.</td></tr><tr';
+		content += '"><td class="GEofferInfo">';
+		content += '<span class="GEofferItemBuySell">';
+		offer.buying ? content += 'BUY' : content += 'SELL';
 		if( offer.percent === 100 ){
-			content += ' class="completed"'
+			content += ' - Complete'
 		}
-		content += '><td>';
-		content += offer.percent + '% complete (' + offer.quantityProcessed + '), ';
-		offer.buying ? content += 'costing ' : content += 'earning ';
-		content += Number.addCommas( offer.costSoFar ) + 'gp';
-		offer.percent === 100 ? content += '</td></tr>' : content += ' so far</td></tr>';
+		//content += '<span class="GEofferPercentage">' + offer.percent + '% </span>';
+		//content += ' <span class="GEofferQuantityProcessed">(' + offer.quantityProcessed + ')</span>';
+		content += '</span><div class="GEofferPercentageIndicator">';
+		content += '<div class="GEofferPercentageIndicatorInner" style="width:' + (offer.percent * 2) + 'px;">';
+		content +=' <span class="GEofferQuantityRaw">' + offer.quantityProcessed + '&nbsp;/&nbsp;' + offer.quantity + '</span>';
+		content +=' <span class="GEofferQuantityPrice">' + Number.addCommas( offer.costSoFar ) + '&nbsp;/&nbsp;' +
+						Number.addCommas( offer.quantity * offer.price ) + '&nbsp;gp</span>';
+		content += '</div></div>';
+		content += '</td></tr>';
 		
 		return content;
 	}
@@ -297,6 +311,14 @@ var initPopup = function(){
 	//Username.get(); //requires Chrome 6.0.472.36 (Beta)
 	Page.initBlockedMessages();
 	fetchAndDisplayPopupData();
+	$('.GEofferPercentageIndicator').live('mouseover', function() {
+		$(this).children().children(':first').hide();
+		$(this).children().children(':last').show();
+	});
+	$('.GEofferPercentageIndicator').live('mouseout', function() {
+		$(this).children().children(':last').hide();
+		$(this).children().children(':first').show();
+	});
 };
 
 $(function() {
