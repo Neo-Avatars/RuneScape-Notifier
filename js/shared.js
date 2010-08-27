@@ -124,16 +124,18 @@ var Browser = {
 		@param iconType - the 'type' part of the URL of the icon to display
 	*/
 	notification: function( title, body, iconType ){
-		var notification = webkitNotifications.createNotification(
-			'img/notification_icon_' + iconType + '.png',  // icon url - can be relative
-			title,  // notification title
-			body  // notification body text
-		);
-		// Then show the notification.
-		notification.show();
-		setTimeout(function(){
-			notification.cancel();
-		}, 7000);
+		if( NotificationOpts.fetchSetting() === 'true' ){
+			var notification = webkitNotifications.createNotification(
+				'img/notification_icon_' + iconType + '.png',  // icon url - can be relative
+				title,  // notification title
+				body  // notification body text
+			);
+			// Then show the notification.
+			notification.show();
+			setTimeout(function(){
+				notification.cancel();
+			}, 7000);
+		}
 	},
 	//, //requires Chrome 6.0.472.36 (Beta) to access cookies
 	/**
@@ -514,6 +516,27 @@ var News = {
 };
 
 /**
+	Options to do with whether the notifications show
+*/	
+var NotificationOpts = {
+	/**
+		The default option - enabled
+	*/
+	defaultSetting: 'false',
+	/**
+		Fetches the setting from storage
+		@return setting - the value that has been stored
+	*/
+	fetchSetting: function(){
+		var setting = Storage.getItem( Storage.Options.showNotifications );
+		if( typeof setting === 'undefined' ){
+			setting = NotificationOpts.defaultSetting;
+		}
+		return setting;
+	}
+};
+
+/**
 	Custom number-formatting functions.
 */
 var Number = {
@@ -555,11 +578,13 @@ var Storage = {
 		@param value - a string to store
 	*/
 	setItem: function( key, value ){
+		//alert('type: ' + typeof value + ' val : ' +value);
 		if( typeof value !== 'string' ){
 			return; //can only store strings
 		}
 		try {
 			localStorage[ key ] = value;
+			//alert('stored data');
 		} catch ( e ) {
 			 if (e == QUOTA_EXCEEDED_ERR) {
 				//data wasn't successfully saved due to quota exceed so threw an error
@@ -615,6 +640,15 @@ var Storage = {
 			The storage key for the news RSS feed
 		*/
 		formattedFeed: 'formattedNewsRSS'
+	},
+	/**
+		Storage keys relating to options
+	*/
+	Options: {
+		/**
+			The storage key for whether notifcations show
+		*/
+		showNotifications: 'showNotifications'
 	}
 };
 

@@ -1,3 +1,7 @@
+0.5.1
+
+- Changed the default setting for notifications to 'off' and provided an option to enable them
+
 0.5.0
 
 - New UI for the GE offers to reduce the walls of text there previously

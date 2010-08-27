@@ -88,8 +88,11 @@
 				<tr>
 					<td><a href="#" onclick="Auth.openAuthPage();">Authorise</a></td>
 					<td class="center"><a href="#" onclick="reloadPopup();" title="May take multiple clicks to reload data">Reload Popup</a></td>
-					<td class="right"><a href="#" onclick="Auth.openUnauthPage();" title="Stop the extension working by stopping it accessing your GE and Activity information">Unauthorise</a></td>
+					<td class="center"><a href="#" onclick="Auth.openUnauthPage();" title="Stop the extension working by stopping it accessing your GE and Activity information">Unauthorise</a></td>
 					<!--<td id="authUsername"></td>-->
+					<td id="showNotificationsTd" class="right">
+						Show Notifications: <input type="checkbox" name="showNotifications" id="showNotifications" />
+					</td>
 				</tr>
 			</tbody>
 		</table>

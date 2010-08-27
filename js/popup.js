@@ -282,6 +282,31 @@ var PopupNews = {
 //};
 
 /**
+	Popup-specific options to do with whether the notifications show
+*/	
+var PopupNotificationOpts = {
+	/**
+		Initialises the visible value
+	*/
+	init: function(){
+		var setting = NotificationOpts.fetchSetting();
+		if( setting === 'true' ){
+			$('#showNotifications').attr( 'checked', true );
+		}
+		$('#showNotifications').click(function(){
+			NotificationOpts.storeSetting();
+		});
+	},
+	/**
+		Stores the setting in storage
+	*/
+	storeSetting: function(){
+		var setting = $('#showNotifications').is(':checked') ? 'true' : 'false';
+		Storage.setItem( Storage.Options.showNotifications, setting );
+	}
+};
+
+/**
 	Reloads all the feeds and re-initialises the UI of the popup
 */
 var reloadPopup = function(){
@@ -308,6 +333,7 @@ var initPopup = function(){
 	$.extend( GE, PopupGE );
 	$.extend( Activities, PopupActivities );
 	$.extend( News, PopupNews );
+	$.extend( NotificationOpts, PopupNotificationOpts );
 	//Username.get(); //requires Chrome 6.0.472.36 (Beta)
 	Page.initBlockedMessages();
 	fetchAndDisplayPopupData();
@@ -319,6 +345,7 @@ var initPopup = function(){
 		$(this).children().children(':last').hide();
 		$(this).children().children(':first').show();
 	});
+	NotificationOpts.init();
 };
 
 $(function() {

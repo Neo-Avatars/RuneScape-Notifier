@@ -1,6 +1,6 @@
 {
 	"name": "RuneScape Notifier",
-	"version": "0.5.0",
+	"version": "0.5.1",
 	"description": "Takes the information available in toolbars for other browsers and gives it to Chrome. By Neo Avatars.",
 	"background_page": "background.html",
 	"update_url": "http://skins.santafish.org/crx/runescape-notifier-updates.xml",
