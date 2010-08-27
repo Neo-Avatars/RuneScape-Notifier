@@ -578,13 +578,11 @@ var Storage = {
 		@param value - a string to store
 	*/
 	setItem: function( key, value ){
-		//alert('type: ' + typeof value + ' val : ' +value);
 		if( typeof value !== 'string' ){
 			return; //can only store strings
 		}
 		try {
 			localStorage[ key ] = value;
-			//alert('stored data');
 		} catch ( e ) {
 			 if (e == QUOTA_EXCEEDED_ERR) {
 				//data wasn't successfully saved due to quota exceed so threw an error

@@ -32,7 +32,6 @@ var PopupAuth = {
 		Displays the link to the authorisation page and hides any other content.
 	*/
 	showAuthLink: function(){
-		//alert( 'auth ');
 		$('#authAuthorise').show();
 		$('#authUnauthorise').hide();
 		$('#GE').hide();
@@ -257,7 +256,6 @@ var PopupNews = {
 		$('#newsPosts').html('<div id="newsPostsContent"></div>'); //need an inner container to be able to re-acordionify it
 		$('#newsPostsContent').html( content );
 		$('#newsPostsContent').accordion({autoHeight: false});
-		//alert('accordioned');
 	}
 };
 
